@@ -1,0 +1,25 @@
+{
+  "name": "noob-challenge-list",
+  "version": "1.0.0",
+  "description": "modbot",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ."
+  },
+  "author": "OMGer",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/builders": "^0.9.0",
+    "@discordjs/rest": "^0.2.0-canary.0",
+    "discord-api-types": "^0.25.2",
+    "discord.js": "^13.3.1",
+    "dotenv": "^10.0.0",
+    "events": "^3.3.0",
+    "mongoose": "^5.13.2",
+    "nodemon": "^2.0.12"
+  },
+  "devDependencies": {
+    "typescript": "^4.3.5"
+  }
+}

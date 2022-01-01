@@ -1,0 +1,12 @@
+{
+    "en": {
+        "lang": "English",
+        "help": "Help",
+        "helpDescription": "Displays the commands for the bot."
+    },
+    "es" : {
+        "lang": "Español",
+        "help": "Ayuda", 
+        "helpDescription": "Muestra los comandos para el bot."
+    }
+}
