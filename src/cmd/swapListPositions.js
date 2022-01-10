@@ -24,8 +24,13 @@ module.exports = {
                         doc2.save();
                         db.Models.verification.findOne({lvlid: lvlid1}, (err, doc1lvl) => {
                             db.Models.verification.findOne({lvlid: lvlid2}, (err, doc2lvl) => {
-                                interaction.guild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${doc1lvl.lvlname}** has been swapped with **${doc2lvl.lvlname}** on the list.`);
+                                if(process.env.TESTMODE == "TRUE") {
+                                    interaction.guild.channels.cache.get(923093254629625926).send(`**${doc1lvl.lvlname}** has been swapped with **${doc2lvl.lvlname}** on the list.`);
                                     interaction.reply({content: 'Placement successfull', ephemeral: true})
+                                } else {
+                                    interaction.guild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${doc1lvl.lvlname}** has been swapped with **${doc2lvl.lvlname}** on the list.`);
+                                    interaction.reply({content: 'Placement successfull', ephemeral: true})
+                                }
                                 
                             })
                         })

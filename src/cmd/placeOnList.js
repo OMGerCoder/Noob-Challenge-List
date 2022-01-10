@@ -30,8 +30,12 @@ module.exports = {
 			
 					
 					listlvl.save();
-					interaction.guild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list.`);
-					interaction.reply({content: 'Placement successfull', ephemeral: true})
+					if(process.env.TESTMODE == "TRUE") {
+						interaction.guild.channels.cache.get(923093254629625926).send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list.`);
+					} else {
+						interaction.guild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list.`);
+					}
+					interaction.reply({content: 'Placement successful', ephemeral: true})
 					
 				}
 			});
