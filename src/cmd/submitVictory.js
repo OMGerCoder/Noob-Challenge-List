@@ -5,11 +5,15 @@ module.exports = {
 		.setName('submitvictory')
 		.setDescription('Submits a list completion')
 		.addIntegerOption(option => option.setName("levelid").setDescription("Level ID").setRequired(true))
-		.addStringOption(option => option.setName("videoproof").setDescription("Proof of completion").setRequired(true)),
+		.addStringOption(option => option.setName("videoproof").setDescription("Proof of completion").setRequired(true))
+		.addStringOption(option => option.setName("userid").setDescription("User ID to submit for (Optional)").setRequired(false)),
 	async execute(interaction, db) {
 		const lvlid = await interaction.options.getInteger('levelid').toString();
 		const videoProof = await interaction.options.getString('videoproof');
-		const userid = await interaction.user.id;
+		const userid = await interaction.options.getString('userid') || await interaction.user.id;
+		if(Number.isSafeInteger(parseInt(userid))) {
+			interaction.reply({content: "Invalid integer! (userid)", ephemeral: true});
+		}
 		const doc = new db.Models.victor({
 			userid: userid,
 			videoProof: videoProof,
