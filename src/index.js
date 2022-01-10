@@ -20,11 +20,16 @@ for (const file of commandFiles) {
 }
 
 client.once('ready', async() => { 
+	console.log(process.env.TESTMODE)
     console.log(`Logged in as ${client.user.tag}!`);
     
 	db.initiateConnection(process.env.MONGODB).then(() => {
 		console.log("Mongodb connection successful")
-	
+		if(process.env.TESTMODE == "TRUE") {
+			client.user.setActivity("TESTMODE - Bot is disabled");
+		} else {
+			client.user.setPresence({activity: null});
+		}
 	}).catch((err) => {
 		console.error(err);
 	})
@@ -35,10 +40,18 @@ const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 	try {
 		console.log('Started refreshing application (/) commands.');
 
-		await rest.put(
-			Routes.applicationGuildCommands(process.env.CLIENTID, process.env.GUILDID),
-			{ body: commands },
-		);
+		if(process.env.TESTMODE == "TRUE") {
+			console.log("TESTMODE is on");
+			await rest.put(
+				Routes.applicationGuildCommands(process.env.CLIENTID, 923010608880836629),
+				{ body: commands },
+			);
+		} else {
+			await rest.put(
+				Routes.applicationGuildCommands(process.env.CLIENTID, process.env.GUILDID),
+				{ body: commands },
+			);
+		}
 
 		console.log('Successfully reloaded application (/) commands.');
 	} catch (error) {
@@ -51,7 +64,12 @@ client.on('interactionCreate', async interaction => {
 	const command = client.commands.get(interaction.commandName);
 
 	if (!command) return;
-
+	if(process.env.TESTMODE == "TRUE" && interaction.guild.id == 922078428604280833) {
+		interaction.reply("Sorry, the bot is currently in testmode. Please try again later or contact OMGer.");
+		return
+	}else if (process.env.TESTMODE == "FALSE" && interaction.guild.id == 923010608880836629) {
+		interaction.reply("Put the bot in testmode before it can work with this server.")
+	}
 	try {
 		await command.execute(interaction, db);
 	} catch (error) {
