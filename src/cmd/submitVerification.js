@@ -33,8 +33,8 @@ module.exports = {
 		// console.log(doc);
 		console.log(interaction.guild.name)
 		if(process.env.TESTMODE == "TRUE") {
-			console.log(interaction.guild.channels.cache)
-			interaction.guild.channels.cache.get(923074517318901790).send(`<@&${process.env.LISTTEAM_ROLEID}>\n**${data.lvlname}**\nBy **${data.creator}**\n${data.lvlid}\nVerified by **${data.verifier}**\n${data.videoProof}`);
+			
+			interaction.guild.channels.cache.get('923074517318901790').send(`<@&${process.env.LISTTEAM_ROLEID}>\n**${data.lvlname}**\nBy **${data.creator}**\n${data.lvlid}\nVerified by **${data.verifier}**\n${data.videoProof}`);
 		} else {
 			// <@&${process.env.LISTTEAM_ROLEID}> List team ping
 			interaction.guild.channels.cache.get(process.env.TODO_CHANNELID).send(`\n**${data.lvlname}**\nBy **${data.creator}**\n${data.lvlid}\nVerified by **${data.verifier}**\n${data.videoProof}`);
