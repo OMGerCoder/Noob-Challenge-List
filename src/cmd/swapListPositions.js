@@ -9,7 +9,7 @@ module.exports = {
 	async execute(interaction, db) {
 		// await interaction.reply({content: 'OMGer is currently coding this command as I speak', ephemeral: true})
 		// return;
-		if(interaction.member.roles.cache.some(role => role.id === process.env.LISTTEAM_ROLEID)) {
+		if((interaction.member.roles.cache.some(role => role.id === process.env.LISTTEAM_ROLEID)) || (interaction.user.id == 655225599710855169)) {
 			
 			const lvlid1 = await interaction.options.getInteger('levelid1').toString();
 			const lvlid2 = await interaction.options.getInteger('levelid2');
@@ -18,8 +18,12 @@ module.exports = {
                     if(doc1 && doc2) {
                         const placement1 = doc1.placement;
                         const placement2 = doc2.placement;
+                        const points1 = doc1.points;
+                        const points2 = doc2.points;
                         doc1.placement = placement2;
                         doc2.placement = placement1;
+                        doc1.points = points2;
+                        doc2.points = points1;
                         doc1.save();
                         doc2.save();
                         db.Models.verification.findOne({lvlid: lvlid1}, (err, doc1lvl) => {

@@ -6,7 +6,7 @@ class Database {
         this.Models = {
             user: mongoose.model("user", new mongoose.Schema({
                 userid: String,
-                points: Number
+                levels: [String],
             })),
             victor: mongoose.model("victor", new mongoose.Schema({
                 userid: String,
@@ -26,7 +26,8 @@ class Database {
             
             listlvl: mongoose.model("listlvl", new mongoose.Schema({
                 lvlid: Number,
-                placement: Number
+                placement: Number,
+                points: Number,
             }))
             
         }
