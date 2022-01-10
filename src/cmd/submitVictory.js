@@ -37,7 +37,7 @@ module.exports = {
 					interaction.guild.channels.cache.get('923099462337982524').send(`<@&${process.env.LISTTEAM_ROLEID}>\n**${namedoc.lvlname}**\nCompleted by \`${interaction.user.tag}\`\n${videoProof}`);
 				} else {
 					// <@&${process.env.LISTTEAM_ROLEID}> List team ping
-					interaction.guild.channels.cache.get(process.env.RECORDS_CHANNELID).send(`<@&${process.env.LISTTEAM_ROLEID}>\n**${namedoc.lvlname}**\nCompleted by \`${interaction.user.tag}\`\n${videoProof}`);
+					interaction.guild.channels.cache.get(process.env.RECORDS_CHANNELID).send(`<@&${process.env.LISTTEAM_ROLEID}>\n**${namedoc.lvlname}**\nCompleted by \`${interaction.guild.members.cache.get(userid).user.tag}\`\n${videoProof}`);
 				}
 				interaction.reply({content: "Successfully sent completion. List team have been notified", ephemeral: true});
 				})
