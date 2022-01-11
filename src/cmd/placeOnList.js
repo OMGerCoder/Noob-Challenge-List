@@ -64,7 +64,7 @@ module.exports = {
 									} else {
 										interaction.guild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list.`);
 									}
-									interaction.reply({content: `Placement successful. ${interaction.guild.members.cache.get(userid).user} has been awarded ${listlvl.points} points.`, ephemeral: false})
+									interaction.reply({content: `Placement successful. <@${userid}> has been awarded ${listlvl.points} points.`, ephemeral: false})
 								}) 
 							} else {
 								interaction.reply({content: `Placement successful. No points have been awarded.`, ephemeral: true})
