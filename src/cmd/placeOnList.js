@@ -5,7 +5,8 @@ module.exports = {
 		.setName('placeonlist')
 		.setDescription('Places a level on the list (ADMIN ONLY)')
 		.addIntegerOption(option => option.setName("levelid").setDescription("Level ID").setRequired(true))
-		.addIntegerOption(option => option.setName("placement").setDescription("Where it will place").setRequired(true)),
+		.addIntegerOption(option => option.setName("placement").setDescription("Where it will place").setRequired(true))
+		.addStringOption(option => option.setName("userid").setDescription("UserID to award points").setRequired(false)),
 	async execute(interaction, db) {
 		// await interaction.reply({content: 'OMGer is currently coding this command as I speak', ephemeral: true})
 		// return;
@@ -13,6 +14,12 @@ module.exports = {
 			
 			const lvlid = await interaction.options.getInteger('levelid').toString();
 			const placement = await interaction.options.getInteger('placement');
+			const userid = await interaction.options.getString('userid');
+			if(userid) {
+			if(Number.isSafeInteger(parseInt(userid))) {
+				interaction.reply({content: "Invalid integer! (userid)", ephemeral: true});
+			}
+			}
 			await db.Models.listlvl.findOne({lvlid: lvlid}, (err, doc) => {
 				if(doc) {
 					interaction.reply({content: "Sorry, you cannot submit duplicates", ephemeral: true});
@@ -41,12 +48,27 @@ module.exports = {
 					
 							
 							listlvl.save();
-							if(process.env.TESTMODE == "TRUE") {
-								interaction.guild.channels.cache.get('923093254629625926').send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list.`);
+							if(userid) {
+								db.Models.user.findOne({userid: userid}, (err, userDoc) => {
+									if(!userDoc) {
+										const createdDoc = new db.Models.user({userid: userid, levels: [lvlid]});
+										createdDoc.save();
+									} else {
+										console.log(userDoc.levels)
+										userDoc.levels.push(lvlid);
+										userDoc.save();
+									}
+									if(process.env.TESTMODE == "TRUE") {
+										interaction.guild.channels.cache.get('923093254629625926').send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list.`);
+									} else {
+										interaction.guild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list.`);
+									}
+									interaction.reply({content: `Placement successful. ${interaction.guild.members.cache.get(userid).user} has been awarded ${listlvl.points} points.`, ephemeral: false})
+								}) 
 							} else {
-								interaction.guild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list.`);
+								interaction.reply({content: `Placement successful. No points have been awarded.`, ephemeral: true})
 							}
-							interaction.reply({content: 'Placement successful', ephemeral: true})
+							
 							
 						}
 					});

@@ -32,7 +32,7 @@ module.exports = {
                                         userDoc.levels.push(lvlid);
                                         userDoc.save();
                                     }
-                                    interaction.reply({content: `${interaction.guild.members.cache.get(usrid).user} has been awarded ${doc.points} points.`, ephemeral: true})
+                                    interaction.reply({content: `${interaction.guild.members.cache.get(usrid).user} has been awarded ${doc.points} points.`, ephemeral: false})
                                 })
                             }
                         })
