@@ -77,6 +77,17 @@ client.on('interactionCreate', async interaction => {
 		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 	}
 });
+
 client.login(process.env.TOKEN); 
+const express = require('express');
+const app = express();
+const port = 80
+app.get('/', (req, res) => {
+	res.send('Hello World!')
+  })
+  
+  app.listen(port, () => {
+	console.log(`Example app listening at http://localhost:${port}`)
+  })
 // console.log(db)
 module.exports = db;
