@@ -47,6 +47,7 @@ module.exports = {
                 interaction.reply({content: `\`\`\`js\n${cleaned}\n\`\`\``, ephemeral: true});
               } catch (err) {
                 // Reply in the channel with our error
+                console.log(err)
                 interaction.reply({content: `An error occured, dumping to console`, ephemeral: true});
               }
         }
