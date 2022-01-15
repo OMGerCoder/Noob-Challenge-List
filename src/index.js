@@ -85,7 +85,7 @@ client.login(process.env.TOKEN);
 const express = require('express');
 const { Http2ServerRequest } = require('http2');
 const app = express();
-const port = 443
+const port = 80
 app.get('/', (req, res) => {
 	res.send('Hello World!')
 })
