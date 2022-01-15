@@ -92,10 +92,26 @@ const port = 80
 app.get('/', (req, res) => {
 	res.send('Hello World!')
 })
-app.get('/stats', (req, res) => {
+app.get('/stats', async(req, res) => {
 	res.send('Stats Viewer')
 })
-
+app.get('/:placement', async(req, res) => {
+	if(!Number.isSafeInteger(parseInt(req.params.placement))) {
+		res.send('NaN (Not a number)');
+		
+	} else {
+		db.Models.listlvl.findOne({placement: parseInt(req.params.placement)}, (err, doc) => {
+		
+			if(!doc) {
+				res.send('Invalid lvl placement')
+			} else {
+				db.Models.verification.findOne({lvlid: doc.lvlid.toString()}, (err, dataDoc) => {
+					res.send(dataDoc.lvlname)
+				})
+			}
+		})
+	}
+})
 https.createServer({
 	key: privateKey,
 	cert: cert
