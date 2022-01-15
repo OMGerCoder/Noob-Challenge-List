@@ -99,6 +99,6 @@ https.createServer({
 }, app).listen(443, () => {
 	console.log('listening https')
 })
-app.listen(443)
+app.listen(80)
 // console.log(db)
 module.exports = db;
