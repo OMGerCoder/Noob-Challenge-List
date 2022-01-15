@@ -83,7 +83,7 @@ client.on('interactionCreate', async interaction => {
 
 client.login(process.env.TOKEN); 
 const express = require('express');
-const { Http2ServerRequest } = require('http2');
+const http = require('http')
 const app = express();
 const port = 80
 app.get('/', (req, res) => {
@@ -92,11 +92,14 @@ app.get('/', (req, res) => {
 app.get('/stats', (req, res) => {
 	res.send('Stats Viewer')
 })
+http.createServer(app).listen(port, () => {
+	console.log('listening http')
+})
 https.createServer({
 	key: privateKey,
 	cert: cert
-}, app).listen(port, () => {
-	console.log('listening')
+}, app).listen(443, () => {
+	console.log('listening https')
 })
 
 // console.log(db)
