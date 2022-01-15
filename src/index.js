@@ -92,9 +92,7 @@ app.get('/', (req, res) => {
 app.get('/stats', (req, res) => {
 	res.send('Stats Viewer')
 })
-http.createServer(app).listen(port, () => {
-	console.log('listening http')
-})
+
 https.createServer({
 	key: privateKey,
 	cert: cert
