@@ -2,6 +2,7 @@ const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config.json');
 const fs = require('fs')
 const { REST } = require('@discordjs/rest');
+const https = require('https')
 const { Routes } = require('discord-api-types/v9');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 client.commands = new Collection();
@@ -11,6 +12,8 @@ const db = new Database(client);
 const config = require("./config.json")
 const dotenv = require("dotenv");
 const commands = require("./deploy-commands");
+const privateKey = fs.readFileSync(process.env.PRIVATEKEY)
+const cert = fs.readFileSync(process.env.CERT)
 dotenv.config();
 for (const file of commandFiles) {
 	const command = require(`./cmd/${file.split(".")[0]}`);
@@ -80,14 +83,19 @@ client.on('interactionCreate', async interaction => {
 
 client.login(process.env.TOKEN); 
 const express = require('express');
+const { Http2ServerRequest } = require('http2');
 const app = express();
-const port = 80
+const port = 443
 app.get('/', (req, res) => {
 	res.send('Hello World!')
-  })
-  
-  app.listen(port, () => {
-	console.log(`Example app listening at http://localhost:${port}`)
-  })
+})
+app.get('/stats', (req, res) => {
+	res.send('Stats Viewer')
+})
+https.createServer({
+	key: privateKey,
+	cert: cert
+}, app).listen(443)
+
 // console.log(db)
 module.exports = db;
