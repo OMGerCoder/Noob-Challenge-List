@@ -14,7 +14,10 @@ const dotenv = require("dotenv");
 const commands = require("./deploy-commands");
 dotenv.config();
 const privateKey = fs.readFileSync(process.env.PRIVATEKEY, 'utf-8')
+console.log(privateKey)
+
 const cert = fs.readFileSync(process.env.CERT, 'utf-8')
+console.log(cert)
 for (const file of commandFiles) {
 	const command = require(`./cmd/${file.split(".")[0]}`);
 	// Set a new item in the Collection
