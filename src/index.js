@@ -95,7 +95,9 @@ app.get('/stats', (req, res) => {
 https.createServer({
 	key: privateKey,
 	cert: cert
-}, app).listen(443)
+}, app).listen(port, () => {
+	console.log('listening')
+})
 
 // console.log(db)
 module.exports = db;
