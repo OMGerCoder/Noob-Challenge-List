@@ -36,7 +36,8 @@ module.exports = {
 							const listlvl = new db.Models.listlvl({
 								lvlid: lvlid,
 								placement: placement,
-								points: points
+								points: points,
+								verification: doc.get('_id')
 							})
 							db.Models.listlvl.find({placement: {$gte : placement}}, (err, docs) => {
 								docs.forEach(doc => {

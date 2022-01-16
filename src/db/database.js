@@ -28,6 +28,10 @@ class Database {
                 lvlid: Number,
                 placement: Number,
                 points: Number,
+                verification: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'verification'
+                }
             }))
             
         }
