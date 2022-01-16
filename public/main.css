@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@700&display=swap');
+.menubar {
+list-style-type: none;
+margin: 0;
+padding: 0;
+overflow: hidden;
+background-color: #333;
+}
+* {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+.menuitem {
+float: left;
+}
+#discord {
+float: right;
+}
+  
+.menuitem a {
+display: block;
+color: white;
+text-align: center;
+padding: 14px 16px;
+text-decoration: none;
+  }
+  
+/* Change the link color to #111 (black) on hover */
+.menuitem a:hover {
+background-color: #111;
+}
+.listitem {
+    text-decoration: none;
+    color: black;
+}
+.list {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
