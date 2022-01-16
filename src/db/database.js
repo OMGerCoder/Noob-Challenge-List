@@ -7,6 +7,7 @@ class Database {
             user: mongoose.model("user", new mongoose.Schema({
                 userid: String,
                 levels: [String],
+                username: String,
             })),
             victor: mongoose.model("victor", new mongoose.Schema({
                 userid: String,

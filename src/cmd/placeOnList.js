@@ -6,7 +6,7 @@ module.exports = {
 		.setDescription('Places a level on the list (ADMIN ONLY)')
 		.addIntegerOption(option => option.setName("levelid").setDescription("Level ID").setRequired(true))
 		.addIntegerOption(option => option.setName("placement").setDescription("Where it will place").setRequired(true))
-		.addStringOption(option => option.setName("userid").setDescription("UserID to award points").setRequired(false)),
+		.addMentionableOption(option => option.setName("user").setDescription("User to award points").setRequired(false)),
 	async execute(interaction, db) {
 		// await interaction.reply({content: 'OMGer is currently coding this command as I speak', ephemeral: true})
 		// return;
@@ -14,12 +14,8 @@ module.exports = {
 			
 			const lvlid = await interaction.options.getInteger('levelid').toString();
 			const placement = await interaction.options.getInteger('placement');
-			const userid = await interaction.options.getString('userid');
-			if(userid) {
-			if(Number.isSafeInteger(parseInt(userid))) {
-				interaction.reply({content: "Invalid integer! (userid)", ephemeral: true});
-			}
-			}
+			const user = await interaction.options.getMentionable('user');
+
 			await db.Models.listlvl.findOne({lvlid: lvlid}, (err, doc) => {
 				if(doc) {
 					interaction.reply({content: "Sorry, you cannot submit duplicates", ephemeral: true});
@@ -49,11 +45,11 @@ module.exports = {
 					
 							
 							listlvl.save();
-							if(userid) {
-								console.log(userid)
-								db.Models.user.findOne({userid: userid}, (err, userDoc) => {
+							if(user) {
+								
+								db.Models.user.findOne({userid: user.id}, (err, userDoc) => {
 									if(!userDoc) {
-										const createdDoc = new db.Models.user({userid: userid, levels: [lvlid]});
+										const createdDoc = new db.Models.user({userid: user.id, levels: [lvlid], username: user.tag});
 										createdDoc.save();
 									} else {
 										console.log(userDoc.levels)
@@ -65,7 +61,7 @@ module.exports = {
 									} else {
 										interaction.guild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list.`);
 									}
-									interaction.reply({content: `Placement successful. <@${userid}> has been awarded ${listlvl.points} points.`, ephemeral: false})
+									interaction.reply({content: `Placement successful. <@${user.id}> has been awarded ${listlvl.points} points.`, ephemeral: false})
 								}) 
 							} else {
 								if(process.env.TESTMODE == "TRUE") {
