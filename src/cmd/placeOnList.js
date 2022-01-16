@@ -46,10 +46,9 @@ module.exports = {
 							
 							listlvl.save();
 							if(user) {
-								
 								db.Models.user.findOne({userid: user.id}, (err, userDoc) => {
 									if(!userDoc) {
-										const createdDoc = new db.Models.user({userid: user.id, levels: [lvlid], username: user.tag});
+										const createdDoc = new db.Models.user({userid: user.id, username: user.user.tag, levels: [lvlid]});
 										createdDoc.save();
 									} else {
 										console.log(userDoc.levels)
