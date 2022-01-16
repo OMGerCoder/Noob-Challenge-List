@@ -93,7 +93,7 @@ app.get('/', (req, res) => {
 	db.Models.listlvl.find({}).sort({placement: 1}).populate('verification').exec((err, docs) => {
 		const lvls = [];
 		docs.forEach((element) => {
-			lvls.push({placement: element.placement, name: element.verification.lvlname});
+			lvls.push({placement: element.placement, name: element.verification.lvlname, author: element.verification.creator, points: element.points});
 		})
 		res.render('list', {levels: lvls})
 	})
@@ -120,7 +120,9 @@ app.get('/lvl/:placement', async(req, res) => {
 						lvlname: dataDoc.lvlname,
 						creator: dataDoc.creator,
 						verifier: dataDoc.verifier,
-						id: dataDoc.lvlid
+						id: dataDoc.lvlid,
+						proof: dataDoc.videoProof,
+						points: doc.points
 					})
 					
 				})

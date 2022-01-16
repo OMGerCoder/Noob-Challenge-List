@@ -25,7 +25,7 @@ module.exports = {
                             } else {
                                 db.Models.user.findOne({userid: usrid}, (err, userDoc) => {
                                     if(!userDoc) {
-                                        const createdDoc = new db.Models.user({userid: usrid, levels: [lvlid]});
+                                        const createdDoc = new db.Models.user({userid: usrid, levels: [lvlid], username: interaction.guild.users.cache.get(usrid).tag});
                                         createdDoc.save();
                                     } else {
                                         console.log(userDoc.levels)
