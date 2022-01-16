@@ -3,15 +3,15 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('verifyvictor')
 		.setDescription('Accepts somebodys record')
-		.addStringOption(option => option.setName("userid").setDescription("User ID").setRequired(true))
+		.addMentionableOption(option => option.setName("user").setDescription("User").setRequired(true))
 		.addIntegerOption(option => option.setName("levelid").setDescription("Level that he beat").setRequired(true)),
         
 	async execute(interaction, db) {
         if((interaction.member.roles.cache.some(role => role.id === process.env.LISTTEAM_ROLEID)) || (interaction.user.id == 655225599710855169)) {
         
         const lvlid = await interaction.options.getInteger('levelid').toString();
-        const usrid = await interaction.options.getString('userid');
-        await db.Models.user.findOne({userid: usrid, levels: lvlid}, (err, doc) => {
+        const usr = await interaction.options.getMentionable('user');
+        await db.Models.user.findOne({userid: usr.id, levels: lvlid}, (err, doc) => {
             if(doc) {
                 interaction.reply({content: "Sorry, you cannot submit duplicates", ephemeral: true});
             } else {
@@ -19,20 +19,20 @@ module.exports = {
                     if (!doc) {
                         interaction.reply({content: 'Level does not exist in the first place! Contact OMGer if there is an issue.', ephemeral: true})
                     } else {
-                        db.Models.victor.findOne({userid: usrid, lvlid: lvlid}, (err, victorDoc) => {
+                        db.Models.victor.findOne({userid: usr.id, lvlid: lvlid}, (err, victorDoc) => {
                             if(!victorDoc) {
                                 interaction.reply({content: 'This person never submitted a victory! Contact OMGer if there is an issue', ephemeral: true})
                             } else {
-                                db.Models.user.findOne({userid: usrid}, (err, userDoc) => {
+                                db.Models.user.findOne({userid: usr.id}, (err, userDoc) => {
                                     if(!userDoc) {
-                                        const createdDoc = new db.Models.user({userid: usrid, levels: [lvlid], username: interaction.guild.users.cache.get(usrid).tag});
+                                        const createdDoc = new db.Models.user({userid: usr.id, levels: [lvlid], username: usr.user.tag});
                                         createdDoc.save();
                                     } else {
                                         console.log(userDoc.levels)
                                         userDoc.levels.push(lvlid);
                                         userDoc.save();
                                     }
-                                    interaction.reply({content: `<@${usrid}> has been awarded ${doc.points} points.`, ephemeral: false})
+                                    interaction.reply({content: `<@${usr.id}> has been awarded ${doc.points} points.`, ephemeral: false})
                                 })
                             }
                         })

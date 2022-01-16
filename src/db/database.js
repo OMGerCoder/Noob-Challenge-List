@@ -6,8 +6,8 @@ class Database {
         this.Models = {
             user: mongoose.model("user", new mongoose.Schema({
                 userid: String,
-                levels: [String],
                 username: String,
+                levels: [String],
             })),
             victor: mongoose.model("victor", new mongoose.Schema({
                 userid: String,

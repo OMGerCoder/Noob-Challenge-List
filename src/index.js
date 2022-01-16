@@ -102,7 +102,37 @@ app.get('/', (req, res) => {
 	
 })
 app.get('/stats', async(req, res) => {
-	res.send('Stats Viewer')
+	
+	db.Models.user.find({}, async(err, userDocs) => {
+		
+		var obj = {};
+		userDocs.forEach(async(user) => {
+			
+			await db.Models.listlvl.find({lvlid: { $in: user.levels}}, async(err, doc) => {
+				obj[user.username] = 0;
+				doc.forEach(async(lvl) => {
+					obj[user.username] += lvl.points;
+				})
+			
+				
+			})
+			
+		})
+
+		setTimeout(() => {
+			var sortable = [];
+			for(var user in obj) {
+				sortable.push([user, obj[user]])
+			}
+			sortable.sort((a, b) => {
+				return b[1] - a[1]
+			});
+			res.render('stats', {
+				array: sortable
+			})
+		}, 750)
+	})
+	
 })
 app.get('/lvl/:placement', async(req, res) => {
 	if(!Number.isSafeInteger(parseInt(req.params.placement))) {

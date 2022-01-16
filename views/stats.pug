@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    link(rel='stylesheet', href='/main.css')
+    title Stats Viewer
+  body
+    include includes/menubar.pug
+    
+    h1 Stats Viewer
+    ol(class="list")
+      each val in array
+        li(class="listitem") #{val[0]}: #{val[1]}pts
