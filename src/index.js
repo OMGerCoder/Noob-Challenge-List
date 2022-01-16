@@ -88,6 +88,7 @@ const http = require('http')
 const app = express();
 app.set('view engine', 'pug');
 app.set('views','./views');
+app.use(express.static('public'))
 app.get('/', (req, res) => {
 	db.Models.listlvl.find({}).sort({placement: 1}).populate('verification').exec((err, docs) => {
 		const lvls = [];
@@ -103,7 +104,7 @@ app.get('/', (req, res) => {
 app.get('/stats', async(req, res) => {
 	res.send('Stats Viewer')
 })
-app.get('/:placement', async(req, res) => {
+app.get('/lvl/:placement', async(req, res) => {
 	if(!Number.isSafeInteger(parseInt(req.params.placement))) {
 		res.send('NaN (Not a number)');
 		
