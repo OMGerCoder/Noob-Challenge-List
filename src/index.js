@@ -14,10 +14,8 @@ const dotenv = require("dotenv");
 const commands = require("./deploy-commands");
 dotenv.config();
 const privateKey = fs.readFileSync(process.env.PRIVATEKEY, 'utf-8')
-console.log(privateKey)
 
 const cert = fs.readFileSync(process.env.CERT, 'utf-8')
-console.log(cert)
 for (const file of commandFiles) {
 	const command = require(`./cmd/${file.split(".")[0]}`);
 	// Set a new item in the Collection
@@ -88,9 +86,19 @@ client.login(process.env.TOKEN);
 const express = require('express');
 const http = require('http')
 const app = express();
-const port = 80
+app.set('view engine', 'pug');
+app.set('views','./views');
 app.get('/', (req, res) => {
-	res.send('Hello World!')
+	db.Models.listlvl.find({}).sort({placement: 1}).populate('verification').exec((err, docs) => {
+		const lvls = [];
+		docs.forEach((element) => {
+			lvls.push({placement: element.placement, name: element.verification.lvlname});
+		})
+		res.render('list', {levels: lvls})
+	})
+	
+	
+	
 })
 app.get('/stats', async(req, res) => {
 	res.send('Stats Viewer')
@@ -106,7 +114,14 @@ app.get('/:placement', async(req, res) => {
 				res.send('Invalid lvl placement')
 			} else {
 				db.Models.verification.findOne({lvlid: doc.lvlid.toString()}, (err, dataDoc) => {
-					res.send(dataDoc.lvlname)
+					
+					res.render('level', {
+						lvlname: dataDoc.lvlname,
+						creator: dataDoc.creator,
+						verifier: dataDoc.verifier,
+						id: dataDoc.lvlid
+					})
+					
 				})
 			}
 		})
@@ -120,4 +135,3 @@ https.createServer({
 })
 app.listen(80)
 // console.log(db)
-module.exports = db;

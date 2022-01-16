@@ -1,0 +1,10 @@
+doctype html
+html
+  head
+    title Noob Challenge List
+  body
+    h1 List
+    ol
+      each val in levels
+        li
+          a(class="listitem" href="/" + val.placement) #{val.name}
