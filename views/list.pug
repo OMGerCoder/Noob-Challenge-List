@@ -1,13 +1,13 @@
 doctype html
 html
   head
-    link(rel='stylesheet', href='/main.css')
+    include includes/header.pug
     title Noob Challenge List
   body
     include includes/menubar.pug
     
     h1 List
-    ol(class="list")
+    ol(class="list" type="1")
       each val in levels
         li
-          a(class="listitem" href="/lvl/" + val.placement) #{val.placement}. #{val.name} by #{val.author} #{val.points}pts
+          a(class="listitem" href="/lvl/" + val.placement) #{levels.indexOf(val) + 1}. #{val.name} by #{val.author} #{val.points}pts
