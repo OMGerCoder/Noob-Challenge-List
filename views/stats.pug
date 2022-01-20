@@ -1,12 +1,12 @@
 doctype html
 html
   head
-    link(rel='stylesheet', href='/main.css')
+    include includes/header.pug
     title Stats Viewer
   body
     include includes/menubar.pug
     
     h1 Stats Viewer
-    ol(class="list")
+    ol(class="list" type="1")
       each val in array
-        li(class="listitem") #{val[0]}: #{val[1]}pts
+        li(class="listitem") #{array.indexOf(val) + 1}. #{val[0]}: #{val[1]}pts
