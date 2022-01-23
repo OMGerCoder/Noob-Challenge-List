@@ -51,7 +51,6 @@ module.exports = {
 										const createdDoc = new db.Models.user({userid: user.id, username: user.user.tag, levels: [lvlid]});
 										createdDoc.save();
 									} else {
-										console.log(userDoc.levels)
 										userDoc.levels.push(lvlid);
 										userDoc.save();
 									}
