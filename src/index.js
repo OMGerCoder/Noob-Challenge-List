@@ -145,14 +145,23 @@ app.get('/lvl/:placement', async(req, res) => {
 				res.send('Invalid lvl placement')
 			} else {
 				db.Models.verification.findOne({lvlid: doc.lvlid.toString()}, (err, dataDoc) => {
-					
+					var isStreamable = false;
+					var proof = dataDoc.videoProof;
+					if(dataDoc.videoProof.startsWith("https://streamable.com/")) {
+						isStreamable = true
+						const videoId = proof.slice(23);
+						const link1 = "https://streamable.com/e/"
+						const link2 = link1.concat(videoId)
+						proof = link2.concat("?loop=0")
+					}
 					res.render('level', {
 						lvlname: dataDoc.lvlname,
 						creator: dataDoc.creator,
 						verifier: dataDoc.verifier,
 						id: dataDoc.lvlid,
-						proof: dataDoc.videoProof,
-						points: doc.points
+						proof: proof,
+						points: doc.points,
+						isStreamable: isStreamable
 					})
 					
 				})
