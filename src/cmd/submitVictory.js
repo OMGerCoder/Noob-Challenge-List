@@ -6,28 +6,25 @@ module.exports = {
 		.setDescription('Submits a list completion')
 		.addIntegerOption(option => option.setName("levelid").setDescription("Level ID").setRequired(true))
 		.addStringOption(option => option.setName("videoproof").setDescription("Proof of completion").setRequired(true))
-		.addStringOption(option => option.setName("userid").setDescription("User ID to submit for (Optional)").setRequired(false)),
+		.addUserOption(option => option.setName("user").setDescription("User to submit for (Optional)").setRequired(false)),
 	async execute(interaction, db) {
 		const lvlid = await interaction.options.getInteger('levelid').toString();
 		const videoProof = await interaction.options.getString('videoproof');
-		const userid = await interaction.options.getString('userid') || await interaction.user.id;
-		if(Number.isSafeInteger(parseInt(userid))) {
-			interaction.reply({content: "Invalid integer! (userid)", ephemeral: true});
-		}
-		await db.Models.victor.findOne({userid: userid, lvlid: lvlid}, (err, doc) => {
+		const user = await interaction.options.getUser('user') || await interaction.user;
+		await db.Models.victor.findOne({userid: user.id, lvlid: lvlid}, (err, doc) => {
 			if(doc) {
 				interaction.reply({content: "Sorry, you cannot submit duplicates", ephemeral: true});
 			} else {
 			
 				const doc = new db.Models.victor({
-					userid: userid,
+					userid: user.id,
 					videoProof: videoProof,
 					lvlid: lvlid
 				})
-				db.Models.user.findOne({userid: userid}, (err, userdoc) => {
+				db.Models.user.findOne({userid: user.id}, (err, userdoc) => {
 					if (userdoc === null) {
-						const user = new db.Models.user({userid: userid, points: 0})
-						user.save();
+						const docUser = new db.Models.user({userid: user.id, points: 0, username: user.tag})
+						docUser.save();
 					}
 				})
 				var lvlname = null;
@@ -42,7 +39,7 @@ module.exports = {
 							interaction.guild.channels.cache.get('923099462337982524').send(`**${namedoc.lvlname}**\nCompleted by \`${interaction.user.tag}\`\n${videoProof}`);
 						} else {
 							// <@&${process.env.LISTTEAM_ROLEID}> List team ping
-							interaction.guild.channels.cache.get(process.env.RECORDS_CHANNELID).send(`**${namedoc.lvlname}**\nCompleted by \`${interaction.guild.members.cache.get(userid).user.tag}\`\n${videoProof}`);
+							interaction.guild.channels.cache.get(process.env.RECORDS_CHANNELID).send(`**${namedoc.lvlname}**\nCompleted by \`${interaction.guild.members.cache.get(user.id).user.tag}\`\n${videoProof}`);
 						}
 						interaction.reply({content: "Successfully sent completion. List team have been notified", ephemeral: true});
 						})
