@@ -235,6 +235,10 @@ app.get('/api/login', async(req, res) => {
 	})
 	
 })
+app.get('/api/logout', (req, res) => {
+	res.clearCookie('discordToken');
+	res.redirect('back');
+})
 https.createServer({
 	key: privateKey,
 	cert: cert
