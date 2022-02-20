@@ -84,25 +84,58 @@ client.on('interactionCreate', async interaction => {
 
 client.login(process.env.TOKEN); 
 const express = require('express');
-const http = require('http')
+const http = require('http');
+const cookieParser = require('cookie-parser');
 const app = express();
+const discordLogin = async(req, res, next) => {
+	if(req.cookies.discordToken) {
+		fetch('https://discord.com/api/users/@me', {
+			headers: {
+				authorization: `Bearer ${req.cookies.discordToken}`
+			}
+		}).then(result => {
+			result.json().then(info => {
+				res.locals.info = info;
+				next();
+			})
+		})
+	} else {
+		next();
+	}
+	
+}
 app.set('view engine', 'pug');
 app.set('views','./views');
+app.use(cookieParser());
 app.use(express.static('public'))
+app.use(discordLogin);
 app.get('/', (req, res) => {
+	const checkAuthorized = (res) => {
+		if(res.locals.info) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	db.Models.listlvl.find({}).sort({placement: 1}).populate('verification').exec((err, docs) => {
 		const lvls = [];
 		docs.forEach((element) => {
 			lvls.push({placement: element.placement, name: element.verification.lvlname, author: element.verification.creator, points: element.points});
 		})
-		res.render('list', {levels: lvls})
+		res.render('list', {levels: lvls, authorized: checkAuthorized(res), info: res.locals.info})
 	})
 	
 	
 	
 })
 app.get('/stats', async(req, res) => {
-	
+	const checkAuthorized = (res) => {
+		if(res.locals.info) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	db.Models.user.find({}, async(err, userDocs) => {
 		
 		var obj = {};
@@ -127,14 +160,19 @@ app.get('/stats', async(req, res) => {
 			sortable.sort((a, b) => {
 				return b[1] - a[1]
 			});
-			res.render('stats', {
-				array: sortable
-			})
+			res.render('stats', {array: sortable, authorized: checkAuthorized(res), info: res.locals.info})
 		}, 750)
 	})
 	
 })
 app.get('/lvl/:placement', async(req, res) => {
+	const checkAuthorized = (res) => {
+		if(res.locals.info) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	if(!Number.isSafeInteger(parseInt(req.params.placement))) {
 		res.send('NaN (Not a number)');
 		
@@ -161,13 +199,41 @@ app.get('/lvl/:placement', async(req, res) => {
 						id: dataDoc.lvlid,
 						proof: proof,
 						points: doc.points,
-						isStreamable: isStreamable
+						isStreamable: isStreamable, 
+						authorized: checkAuthorized(res), 
+						info: res.locals.info
 					})
 					
 				})
 			}
 		})
 	}
+})
+
+const fetch = require('node-fetch')
+app.get('/api/login', async(req, res) => {
+	const code = req.query.code;
+	
+	const { URLSearchParams } = require('url');
+	const params = new URLSearchParams();
+	params.append('client_id', process.env.OAUTHID);
+	params.append('client_secret', process.env.OAUTHSECRET);
+	params.append('grant_type', 'authorization_code');
+	params.append('code', code);
+	params.append('redirect_uri', process.env.REDIRECT_URI)
+	await fetch("https://discord.com/api/oauth2/token", {
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded'
+		},
+		method: 'POST',
+		body: params
+	}).then((apires) => {
+		apires.json().then(result => {
+			res.cookie('discordToken', result.access_token, { maxAge: result.expires_in * 1000, httpOnly: true })
+			res.redirect('/')
+		});
+	})
+	
 })
 https.createServer({
 	key: privateKey,

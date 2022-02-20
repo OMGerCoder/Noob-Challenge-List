@@ -12,7 +12,7 @@ background-color: #333;
 .menuitem {
 float: left;
 }
-#discord {
+#login {
 float: right;
 }
   
@@ -22,7 +22,15 @@ color: white;
 text-align: center;
 padding: 14px 16px;
 text-decoration: none;
-  }
+}
+.menuitem p {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 0px 16px;
+    margin-top: 13px;
+    text-decoration: none;
+    }
   
 /* Change the link color to #111 (black) on hover */
 .menuitem a:hover {

@@ -3,6 +3,9 @@ ul(class="menubar")
     a(href="/") List
   li(class="menuitem")
     a(href="/stats") Stats Viewer
-  li(class="menuitem" id="discord")
-    a(href="https://discord.gg/rgcqpXHgkc") Join Discord
+  li(class="menuitem" id="login")
+    if authorized == false
+      a(href="https://discord.com/oauth2/authorize?client_id=923025689492459530&redirect_uri=https%3A%2F%2Fnoobchallengelist.com%2Fapi%2Flogin&response_type=code&scope=identify%20guilds.join") Login
+    else
+      a(href="/api/logout") #{info.username}##{info.discriminator}
 br
