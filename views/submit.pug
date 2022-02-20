@@ -1,0 +1,31 @@
+doctype html
+html
+  head
+    include includes/header.pug
+    title Submit Verification/Victory
+  body
+    include includes/menubar.pug
+    div(class="submitrecord" id="submitver")
+        h1 Submit Verification
+        form(action="/api/submit/verification", method="POST")
+            p Level Name:
+            input(type="text", name="lvlname", value="")
+            p Level ID:
+            input(type="number", name="lvlid", value="")
+            p Video Proof link
+            input(type="url", name="videoproof", value="")
+            p Creator
+            input(type="text", name="creator", value="")
+            p Verifier
+            input(type="text", name="verifier", value="")
+            br
+            input(type="submit", value="Submit")
+    div(class="submitrecord" id="submitvic")
+        h1 Submit Victory
+        form(action="/api/submit/victory", method="POST")
+            p Level ID:
+            input(type="number", name="lvlid", value="")
+            p Video Proof link:
+            input(type="url", name="videoproof", value="")
+            br
+            input(type="submit", value="Submit")

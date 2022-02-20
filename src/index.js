@@ -84,6 +84,9 @@ client.on('interactionCreate', async interaction => {
 
 client.login(process.env.TOKEN); 
 const express = require('express');
+var bodyParser = require('body-parser');
+var multer = require('multer');
+var upload = multer();
 const http = require('http');
 const cookieParser = require('cookie-parser');
 const app = express();
@@ -104,19 +107,23 @@ const discordLogin = async(req, res, next) => {
 	}
 	
 }
+const checkAuthorized = (res) => {
+	if(res.locals.info) {
+		return true;
+	} else {
+		return false;
+	}
+}
 app.set('view engine', 'pug');
 app.set('views','./views');
 app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(upload.array()); 
 app.use(express.static('public'))
 app.use(discordLogin);
 app.get('/', (req, res) => {
-	const checkAuthorized = (res) => {
-		if(res.locals.info) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+
 	db.Models.listlvl.find({}).sort({placement: 1}).populate('verification').exec((err, docs) => {
 		const lvls = [];
 		docs.forEach((element) => {
@@ -129,13 +136,6 @@ app.get('/', (req, res) => {
 	
 })
 app.get('/stats', async(req, res) => {
-	const checkAuthorized = (res) => {
-		if(res.locals.info) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 	db.Models.user.find({}, async(err, userDocs) => {
 		
 		var obj = {};
@@ -166,13 +166,6 @@ app.get('/stats', async(req, res) => {
 	
 })
 app.get('/lvl/:placement', async(req, res) => {
-	const checkAuthorized = (res) => {
-		if(res.locals.info) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 	if(!Number.isSafeInteger(parseInt(req.params.placement))) {
 		res.send('NaN (Not a number)');
 		
@@ -209,7 +202,18 @@ app.get('/lvl/:placement', async(req, res) => {
 		})
 	}
 })
-
+app.get('/submit', async(req, res) => {
+	const nclguild = await client.guilds.fetch(process.env.GUILDID);
+	if(!checkAuthorized(res)) {
+		res.render('error', {error: 'You aren\'t logged in!', authorized: false})
+	} else {
+		if(!await nclguild.members.fetch(res.locals.info.id)) {
+			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
+		} else {
+			res.render('submit', {authorized: checkAuthorized(res), info: res.locals.info})
+		}
+	}
+})
 const fetch = require('node-fetch')
 app.get('/api/login', async(req, res) => {
 	const code = req.query.code;
@@ -238,6 +242,39 @@ app.get('/api/login', async(req, res) => {
 app.get('/api/logout', (req, res) => {
 	res.clearCookie('discordToken');
 	res.redirect('back');
+})
+app.post('/api/submit/verification', async(req, res) => {
+	const nclguild = await client.guilds.fetch(process.env.GUILDID);
+	await db.Models.verification.findOne({lvlid: req.body.lvlid}, (err, doc) => {
+		if(doc) {
+			res.render('error', {error: 'You cannot submit duplicates!', authorized: checkAuthorized(res), info: res.locals.info})	
+		} else {
+			const doc = new db.Models.verification({
+				lvlname: req.body.lvlname,
+				lvlid: req.body.lvlid,
+				videoProof: req.body.videoproof,
+				creator: req.body.creator,
+				verifier: req.body.verifier
+			})
+			const data = {
+				lvlname: req.body.lvlname,
+				lvlid: req.body.lvlid,
+				videoProof: req.body.videoproof,
+				creator: req.body.creator,
+				verifier: req.body.verifier
+			}
+			doc.save();
+			// console.log(doc);
+			if(process.env.TESTMODE == "TRUE") {
+				
+			} else {
+				// <@&${process.env.LISTTEAM_ROLEID}> List team ping
+				nclguild.channels.cache.get(process.env.TODO_CHANNELID).send(`\n**${data.lvlname}**\nBy **${data.creator}**\n${data.lvlid}\nVerified by **${data.verifier}**\n${data.videoProof}`);
+			}
+			res.send('Successfull')
+			
+		}
+	})
 })
 https.createServer({
 	key: privateKey,
