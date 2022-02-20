@@ -9,23 +9,27 @@ html
         h1 Submit Verification
         form(action="/api/submit/verification", method="POST")
             p Level Name:
-            input(type="text", name="lvlname", value="")
+            input(type="text", name="lvlname", value="", required)
             p Level ID:
-            input(type="number", name="lvlid", value="")
+            input(type="number", name="lvlid", value="", required)
             p Video Proof link
-            input(type="url", name="videoproof", value="")
+            input(type="url", name="videoproof", value="", required)
             p Creator
-            input(type="text", name="creator", value="")
+            input(type="text", name="creator", value="", required)
             p Verifier
-            input(type="text", name="verifier", value="")
+            input(type="text", name="verifier", value="", required)
             br
             input(type="submit", value="Submit")
+            if verSuccessful == true
+                p(class="greentext") Successful!
     div(class="submitrecord" id="submitvic")
         h1 Submit Victory
         form(action="/api/submit/victory", method="POST")
             p Level ID:
-            input(type="number", name="lvlid", value="")
+            input(type="number", name="lvlid", value="", required)
             p Video Proof link:
-            input(type="url", name="videoproof", value="")
+            input(type="url", name="videoproof", value="", required)
             br
             input(type="submit", value="Submit")
+            if vicSuccessful == true
+                p(class="greentext") Successful!

@@ -210,7 +210,7 @@ app.get('/submit', async(req, res) => {
 		if(!await nclguild.members.fetch(res.locals.info.id)) {
 			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
 		} else {
-			res.render('submit', {authorized: checkAuthorized(res), info: res.locals.info})
+			res.render('submit', {verSuccessful: false, vicSuccessful: false, authorized: checkAuthorized(res), info: res.locals.info})
 		}
 	}
 })
@@ -271,8 +271,49 @@ app.post('/api/submit/verification', async(req, res) => {
 				// <@&${process.env.LISTTEAM_ROLEID}> List team ping
 				nclguild.channels.cache.get(process.env.TODO_CHANNELID).send(`\n**${data.lvlname}**\nBy **${data.creator}**\n${data.lvlid}\nVerified by **${data.verifier}**\n${data.videoProof}`);
 			}
-			res.send('Successfull')
+			res.render('submit', {verSuccessful: true, vicSuccessful: false, authorized: checkAuthorized(res), info: res.locals.info})
 			
+		}
+	})
+})
+app.post('/api/submit/victory', async(req, res) => {
+	
+	const nclguild = await client.guilds.fetch(process.env.GUILDID);
+	const user = res.locals.info;
+	await db.Models.victor.findOne({userid: user.id, lvlid: req.body.lvlid}, (err, doc) => {
+		if(doc) {
+			res.render('error', {error: 'You cannot submit duplicates!', authorized: checkAuthorized(res), info: res.locals.info})	
+		} else {
+		
+			const doc = new db.Models.victor({
+				userid: user.id,
+				videoProof: req.body.videoproof,
+				lvlid: req.body.lvlid
+			})
+			db.Models.user.findOne({userid: user.id}, (err, userdoc) => {
+				if (userdoc === null) {
+					const docUser = new db.Models.user({userid: user.id, points: 0, username: `${user.username}#${user.discriminator}`})
+					docUser.save();
+				}
+			})
+			var lvlname = null;
+			db.Models.listlvl.findOne({lvlid: req.body.lvlid}, (err, lvldoc) => {
+				if (lvldoc === null) {
+					res.render('error', {error: 'That level isnt on the list!', authorized: checkAuthorized(res), info: res.locals.info})	
+					return;
+				} else {
+					db.Models.verification.findOne({lvlid: req.body.lvlid}, (err, namedoc) => {
+						doc.save();
+					if(process.env.TESTMODE == "TRUE") {
+						
+					} else {
+						// <@&${process.env.LISTTEAM_ROLEID}> List team ping
+						nclguild.channels.cache.get(process.env.RECORDS_CHANNELID).send(`**${namedoc.lvlname}**\nCompleted by \`${user.username}#${user.discriminator}\`\n${req.body.videoProof}`);
+					}
+					res.render('submit', {verSuccessful: false, vicSuccessful: true, authorized: checkAuthorized(res), info: res.locals.info})
+					})
+				}
+			})
 		}
 	})
 })
