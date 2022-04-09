@@ -1,39 +1,46 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@700&display=swap');
-.menubar {
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
+#menubar {
 list-style-type: none;
 margin: 0;
 padding: 0;
 overflow: hidden;
 background-color: #333;
 }
+.vMenubar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 95vw;
+    background-color: #333;
+}
 * {
     font-family: 'Source Sans Pro', sans-serif;
 }
-.menuitem {
+.hzMenubar .menuitem {
 float: left;
-}
-#login {
-float: right;
-}
-  
-.menuitem a {
 display: block;
 color: white;
 text-align: center;
 padding: 14px 16px;
 text-decoration: none;
 }
-.menuitem p {
+.vMenubar .menuitem {
+    float: left;
     display: block;
     color: white;
     text-align: center;
-    padding: 0px 16px;
-    margin-top: 13px;
+    padding: 14px 0px;
+    width: 95vw;
     text-decoration: none;
-    }
+}
+.hzMenubar #login {
+float: right;
+}
   
 /* Change the link color to #111 (black) on hover */
-.menuitem a:hover {
+.hzMenubar .menuitem:hover {
 background-color: #111;
 }
 .listitem {
@@ -53,3 +60,27 @@ background-color: #111;
 .greentext {
     color: #34d100;
 }
+.hzMenubar .icon {
+    display:none;
+}
+@media screen and (max-width: 600px) {
+    .hzMenubar .menuitem:not(.active) {display: none;}
+    .hzMenubar .icon {
+        float: left;
+        display: block;
+    }
+
+}
+@media screen and (max-width: 600px) {
+    .menubar.responsive {position: relative;}
+    .menubar.responsive a.icon {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+    .menubar.responsive a {
+      float: none;
+      display: block;
+      text-align: left;
+    }
+  }

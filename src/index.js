@@ -308,7 +308,7 @@ app.post('/api/submit/victory', async(req, res) => {
 						
 					} else {
 						// <@&${process.env.LISTTEAM_ROLEID}> List team ping
-						nclguild.channels.cache.get(process.env.RECORDS_CHANNELID).send(`**${namedoc.lvlname}**\nCompleted by \`${user.username}#${user.discriminator}\`\n${req.body.videoProof}`);
+						nclguild.channels.cache.get(process.env.RECORDS_CHANNELID).send(`**${namedoc.lvlname}**\nCompleted by \`${user.username}#${user.discriminator}\`\n${req.body.videoproof}`);
 					}
 					res.render('submit', {verSuccessful: false, vicSuccessful: true, authorized: checkAuthorized(res), info: res.locals.info})
 					})
