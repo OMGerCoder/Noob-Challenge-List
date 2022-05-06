@@ -123,19 +123,25 @@ app.use(upload.array());
 app.use(express.static('public'))
 app.use(discordLogin);
 app.get('/', (req, res) => {
+	res.send("Sorry, this is being migrated!")
+})
+app.get('/api/get/lvls', (req, res) => {
 
 	db.Models.listlvl.find({}).sort({placement: 1}).populate('verification').exec((err, docs) => {
 		const lvls = [];
 		docs.forEach((element) => {
 			lvls.push({placement: element.placement, name: element.verification.lvlname, author: element.verification.creator, points: element.points});
 		})
-		res.render('list', {levels: lvls, authorized: checkAuthorized(res), info: res.locals.info})
+		res.json(lvls);
 	})
 	
 	
 	
 })
 app.get('/stats', async(req, res) => {
+	res.send("Sorry, this is being migrated!")
+}) 
+app.get('/api/get/stats', async(req, res) => {
 	db.Models.user.find({}, async(err, userDocs) => {
 		
 		var obj = {};
@@ -160,12 +166,15 @@ app.get('/stats', async(req, res) => {
 			sortable.sort((a, b) => {
 				return b[1] - a[1]
 			});
-			res.render('stats', {array: sortable, authorized: checkAuthorized(res), info: res.locals.info})
+			res.json(sortable);
 		}, 750)
 	})
 	
 })
-app.get('/lvl/:placement', async(req, res) => {
+app.get('/lvl/*', async(req, res) => {
+	res.send("Sorry, this is being migrated!")
+})
+app.get('/api/get/lvl/:placement', async(req, res) => {
 	if(!Number.isSafeInteger(parseInt(req.params.placement))) {
 		res.send('NaN (Not a number)');
 		
@@ -176,42 +185,30 @@ app.get('/lvl/:placement', async(req, res) => {
 				res.send('Invalid lvl placement')
 			} else {
 				db.Models.verification.findOne({lvlid: doc.lvlid.toString()}, (err, dataDoc) => {
-					var isStreamable = false;
-					var proof = dataDoc.videoProof;
-					if(dataDoc.videoProof.startsWith("https://streamable.com/")) {
-						isStreamable = true
-						const videoId = proof.slice(23);
-						const link1 = "https://streamable.com/e/"
-						const link2 = link1.concat(videoId)
-						proof = link2.concat("?loop=0")
-					}
-					res.render('level', {
-						lvlname: dataDoc.lvlname,
-						creator: dataDoc.creator,
-						verifier: dataDoc.verifier,
-						id: dataDoc.lvlid,
-						proof: proof,
-						points: doc.points,
-						isStreamable: isStreamable, 
-						authorized: checkAuthorized(res), 
-						info: res.locals.info
-					})
+					res.json(dataDoc.toObject());
+					
 					
 				})
 			}
 		})
 	}
 })
-app.get('/submit', async(req, res) => {
+app.get('/submit', (req, res) => {
+	res.send("Sorry, this is being migrated!")
+})
+app.get('/api/get/loggedinuser', async(req, res) => {
 	const nclguild = await client.guilds.fetch(process.env.GUILDID);
 	if(!checkAuthorized(res)) {
 		res.render('error', {error: 'You aren\'t logged in!', authorized: false})
 	} else {
-		if(!await nclguild.members.fetch(res.locals.info.id)) {
-			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
-		} else {
-			res.render('submit', {verSuccessful: false, vicSuccessful: false, authorized: checkAuthorized(res), info: res.locals.info})
+		try {
+			await nclguild.members.fetch(res.locals.info.id);
+		} catch(err) {
+			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info});
+			return;
 		}
+		res.json(res.locals.info)
+		
 	}
 })
 const fetch = require('node-fetch')
@@ -247,7 +244,7 @@ app.post('/api/submit/verification', async(req, res) => {
 	const nclguild = await client.guilds.fetch(process.env.GUILDID);
 	await db.Models.verification.findOne({lvlid: req.body.lvlid}, (err, doc) => {
 		if(doc) {
-			res.render('error', {error: 'You cannot submit duplicates!', authorized: checkAuthorized(res), info: res.locals.info})	
+			res.json({error: "You cannot submit duplicates!"})	
 		} else {
 			const doc = new db.Models.verification({
 				lvlname: req.body.lvlname,
@@ -271,7 +268,7 @@ app.post('/api/submit/verification', async(req, res) => {
 				// <@&${process.env.LISTTEAM_ROLEID}> List team ping
 				nclguild.channels.cache.get(process.env.TODO_CHANNELID).send(`\n**${data.lvlname}**\nBy **${data.creator}**\n${data.lvlid}\nVerified by **${data.verifier}**\n${data.videoProof}`);
 			}
-			res.render('submit', {verSuccessful: true, vicSuccessful: false, authorized: checkAuthorized(res), info: res.locals.info})
+			res.json({successful: true, data: data})
 			
 		}
 	})
@@ -282,7 +279,7 @@ app.post('/api/submit/victory', async(req, res) => {
 	const user = res.locals.info;
 	await db.Models.victor.findOne({userid: user.id, lvlid: req.body.lvlid}, (err, doc) => {
 		if(doc) {
-			res.render('error', {error: 'You cannot submit duplicates!', authorized: checkAuthorized(res), info: res.locals.info})	
+			res.json({error: "You cannot submit duplicates!"})
 		} else {
 		
 			const doc = new db.Models.victor({
