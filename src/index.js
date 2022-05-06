@@ -207,11 +207,13 @@ app.get('/submit', async(req, res) => {
 	if(!checkAuthorized(res)) {
 		res.json({loggedIn: false})
 	} else {
-		if(!await nclguild.members.fetch(res.locals.info.id)) {
+		try {
+			await nclguild.members.fetch(res.locals.info.id)
+		} catch(err) {
 			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
-		} else {
-			res.render('submit', {verSuccessful: false, vicSuccessful: false, authorized: checkAuthorized(res), info: res.locals.info})
+			return;
 		}
+		res.render('submit', {verSuccessful: false, vicSuccessful: false, authorized: checkAuthorized(res), info: res.locals.info})
 	}
 })
 const fetch = require('node-fetch')
