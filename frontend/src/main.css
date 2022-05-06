@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@700&display=swap');
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
+#menubar {
+list-style-type: none;
+margin: 0;
+padding: 0;
+overflow: hidden;
+background-color: #333;
+}
+.vMenubar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 95vw;
+    background-color: #333;
+}
+* {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+button {
+    all: unset;
+}
+.hzMenubar .menuitem {
+float: left;
+display: block;
+color: white;
+text-align: center;
+padding: 14px 16px;
+text-decoration: none;
+}
+.vMenubar .menuitem {
+    float: left;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 0px;
+    width: 95vw;
+    text-decoration: none;
+}
+.hzMenubar #login {
+float: right;
+}
+  
+/* Change the link color to #111 (black) on hover */
+.hzMenubar .menuitem:hover {
+background-color: #111;
+}
+.listitem {
+    text-decoration: none;
+    color: black;
+}
+.list {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
+.submitrecord {
+    display: inline-block;
+    padding-right: 20px;
+    vertical-align: top;
+}
+.greentext {
+    color: #34d100;
+}
+.hzMenubar .icon {
+    display:none;
+}
+/*
+@media screen and (max-width: 600px) {
+    .hzMenubar .menuitem:not(.active) {display: none;}
+    .hzMenubar .icon {
+        float: left;
+        display: block;
+    }
+
+}
+@media screen and (max-width: 600px) {
+    .menubar.responsive {position: relative;}
+    .menubar.responsive a.icon {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+    .menubar.responsive a {
+      float: none;
+      display: block;
+      text-align: left;
+    }
+  }
+*/

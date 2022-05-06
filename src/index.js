@@ -199,15 +199,10 @@ app.get('/submit', (req, res) => {
 app.get('/api/get/loggedinuser', async(req, res) => {
 	const nclguild = await client.guilds.fetch(process.env.GUILDID);
 	if(!checkAuthorized(res)) {
-		res.render('error', {error: 'You aren\'t logged in!', authorized: false})
+		res.json({loggedIn: false})
 	} else {
-		try {
-			await nclguild.members.fetch(res.locals.info.id);
-		} catch(err) {
-			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info});
-			return;
-		}
-		res.json(res.locals.info)
+
+		res.json({loggedIn: true, info: res.locals.info})
 		
 	}
 })
