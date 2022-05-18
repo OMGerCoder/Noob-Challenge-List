@@ -21,6 +21,9 @@ module.exports = {
 					db.Models.listlvl.find({placement: {$gte : doc.placement}}, (err, docs) => {
 						for(const belowdoc of docs) {
 							belowdoc.placement -= 1;
+							belowdoc.save();
+						}
+						for(const belowdoc of docs) {
 							const oldPoints = belowdoc.points;
 							belowdoc.points += 2;
 							

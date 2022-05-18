@@ -235,8 +235,16 @@ app.get('/api/login', async(req, res) => {
 		body: params
 	}).then((apires) => {
 		apires.json().then(result => {
-			res.cookie('discordToken', result.access_token, { maxAge: result.expires_in * 1000, httpOnly: true })
-			res.redirect('/')
+			try {
+				res.cookie('discordToken', result.access_token, { maxAge: result.expires_in * 1000, httpOnly: true })
+			} catch(err) {
+				res.render('error', {error: 'Seems like an error occured in the Discord API. This error has been logged to the console. Notify OMGer immediately and try again later.', authorized: false, info: res.locals.info})
+				console.log(err);
+				console.log(result)
+				return;
+			}
+			res.redirect('/');
+			
 		});
 	})
 	
