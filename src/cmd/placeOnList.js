@@ -38,7 +38,9 @@ module.exports = {
 							db.Models.listlvl.find({placement: {$gte : placement}}, (err, docs) => {
 								docs.forEach(doc => {
 									doc.placement += 1;
-									doc.points -= 2;
+									if(doc.points != 0) {
+										doc.points -= 2;
+									}
 									doc.save();	
 								});
 							})

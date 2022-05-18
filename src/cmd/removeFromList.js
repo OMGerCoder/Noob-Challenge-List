@@ -19,11 +19,16 @@ module.exports = {
 				} else {
 					doc.remove();
 					db.Models.listlvl.find({placement: {$gte : doc.placement}}, (err, docs) => {
-						docs.forEach(belowdoc => {
+						for(const belowdoc of docs) {
 							belowdoc.placement -= 1;
+							const oldPoints = belowdoc.points;
 							belowdoc.points += 2;
-							belowdoc.save();	
-						});
+							
+							belowdoc.save();
+							if (oldPoints == 0) {
+								break;
+							}
+						}
 					})
 					db.Models.user.find({levels:lvlid}, (err, users) => {
 						users.forEach(user => {
