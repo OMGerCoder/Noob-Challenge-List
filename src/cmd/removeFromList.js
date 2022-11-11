@@ -17,20 +17,17 @@ module.exports = {
 				if(!doc) {
 					interaction.reply({content: "That level is not on the list", ephemeral: true});
 				} else {
+					var canAddPoints = false;
 					doc.remove();
 					db.Models.listlvl.find({placement: {$gte : doc.placement}}, (err, docs) => {
 						for(const belowdoc of docs) {
+							const oldPoints = belowdoc.points;
+							
+							if(belowdoc.placement <= 50) {
+								belowdoc.points += 2;
+							}
 							belowdoc.placement -= 1;
 							belowdoc.save();
-						}
-						for(const belowdoc of docs) {
-							const oldPoints = belowdoc.points;
-							belowdoc.points += 2;
-							
-							belowdoc.save();
-							if (oldPoints == 0) {
-								break;
-							}
 						}
 					})
 					db.Models.user.find({levels:lvlid}, (err, users) => {
