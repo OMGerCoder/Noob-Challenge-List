@@ -11,3 +11,4 @@ html
       each val in levels
         li
           a(class="listitem" href="/lvl/" + val.placement) #{levels.indexOf(val) + 1}. #{val.name} by #{val.author} #{val.points}pts
+    include includes/footer.pug
