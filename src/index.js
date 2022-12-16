@@ -165,6 +165,12 @@ app.get('/stats', async(req, res) => {
 	})
 	
 })
+app.get('/rules', async(req, res) => {
+	res.render('rules', {
+		authorized: checkAuthorized(res), 
+		info: res.locals.info
+	})
+})
 app.get('/lvl/:placement', async(req, res) => {
 	if(!Number.isSafeInteger(parseInt(req.params.placement))) {
 		res.send('NaN (Not a number)');
