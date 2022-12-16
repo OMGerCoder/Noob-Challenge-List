@@ -87,7 +87,7 @@ footer {
     padding-bottom: 4px;
     text-align: center;
 }
-h1, h2, h3 {
+h1, h2, h3, form {
     margin-left: 8px;
 }
 @media screen and (max-width: 600px) {
