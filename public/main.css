@@ -53,9 +53,9 @@ background-color: #111;
     color: black;
 }
 .list {
-    list-style-type: none;
-    padding: 0px;
-    margin: 8px;
+    margin-left: 8px;
+    display: flex;
+    flex-direction: column; 
 }
 .submitrecord {
     display: inline-block;
@@ -90,6 +90,20 @@ footer {
 h1, h2, h3, form {
     margin-left: 8px;
 }
+.levellistitem {
+    display: flex;
+    width: fit-content;
+    height: 50px;
+    align-items: center;
+  
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 8px;
+    background-color: white;
+    box-shadow: 0 0 10px #8f8f8f;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
 @media screen and (max-width: 600px) {
     .hzMenubar .menuitem:not(.active) {display: none;}
     .hzMenubar .icon {
@@ -98,6 +112,26 @@ h1, h2, h3, form {
     }
 
 }
+.levellistitem a {
+    text-decoration: none;
+    color: black;
+    transition: color ease 0.25s;
+  }
+.levellistitem a:hover {
+    color: #0091ff;
+}
+img {
+  
+    margin-right: 8px;
+    height: 40px;
+}
+.bold {
+    font-weight: bold;
+}
+span {
+    margin-right: 8px;
+}
+  
 @media screen and (max-width: 600px) {
     .menubar.responsive {position: relative;}
     .menubar.responsive a.icon {

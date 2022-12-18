@@ -11,6 +11,8 @@ html
     h3
       if isStreamable
         iframe(src=proof, width="640", height="360", frameborder="0", allowfullscreen) 
+      else if isYoutube
+        iframe(width="640", height="360", src=proof, title="YouTube video player", frameborder="0", allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture", allowfullscreen)
       else
         a(href=proof) Proof: #{proof}
 

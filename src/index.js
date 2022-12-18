@@ -182,14 +182,21 @@ app.get('/lvl/:placement', async(req, res) => {
 				res.send('Invalid lvl placement')
 			} else {
 				db.Models.verification.findOne({lvlid: doc.lvlid.toString()}, (err, dataDoc) => {
-					var isStreamable = false;
+					var isEmbeddable = false;
+					var isYoutube = false 
 					var proof = dataDoc.videoProof;
 					if(dataDoc.videoProof.startsWith("https://streamable.com/")) {
-						isStreamable = true
+						isEmbeddable = true
 						const videoId = proof.slice(23);
 						const link1 = "https://streamable.com/e/"
 						const link2 = link1.concat(videoId)
 						proof = link2.concat("?loop=0")
+					} else if (dataDoc.videoProof.startsWith("https://youtu.be/")) {
+						isYoutube = true;
+						const videoId = proof.slice(17);
+						const link = "https://www.youtube.com/embed/".concat(videoId);
+						console.log(link);
+						proof = link;
 					}
 					res.render('level', {
 						lvlname: dataDoc.lvlname,
@@ -198,7 +205,8 @@ app.get('/lvl/:placement', async(req, res) => {
 						id: dataDoc.lvlid,
 						proof: proof,
 						points: doc.points,
-						isStreamable: isStreamable, 
+						isStreamable: isEmbeddable, 
+						isYoutube: isYoutube,
 						authorized: checkAuthorized(res), 
 						info: res.locals.info
 					})

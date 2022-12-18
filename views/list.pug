@@ -7,8 +7,14 @@ html
     include includes/menubar.pug
     
     h1 List
-    ol(class="list" type="1")
+    div(class="list")
       each val in levels
-        li
-          a(class="listitem" href="/lvl/" + val.placement) #{levels.indexOf(val) + 1}. #{val.name} by #{val.author} #{val.points}pts
+        div(class="levellistitem")
+          span #{levels.indexOf(val) + 1}.
+          img(src="https://noobchallengelist.com/levelimgs/placeholder.png")
+          span(class="bold" style="font-size: 20pt") #{val.name}
+          span By #{val.author}
+          span
+            a(href="/lvl/" + val.placement) Click for more info
+
     include includes/footer.pug
