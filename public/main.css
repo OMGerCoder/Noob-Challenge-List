@@ -110,7 +110,9 @@ h1, h2, h3, form {
         float: left;
         display: block;
     }
-
+    iframe {
+        width: 100%
+    }
 }
 .levellistitem a {
     text-decoration: none;
