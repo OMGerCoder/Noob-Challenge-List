@@ -20,4 +20,12 @@ html
 
     h3 #{points}pts
     h1=id
+    if adminPanelAccess
+      a(href="/panel/edit/" + id class="panelitem")
+        i(class="fa-solid fa-pen-to-square panelicon")
+        span Edit
+      br
+      a(href="/api/delete/" + id class="panelitem")
+        i(class="fa-solid fa-trash-can")
+        span Delete
     include includes/footer.pug

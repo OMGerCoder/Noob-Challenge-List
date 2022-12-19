@@ -11,7 +11,10 @@ border-radius: 25px;
 body {
     margin: 0px;
 }
-
+a {
+    text-decoration: none;
+    color: black;
+}
 .vMenubar {
     list-style-type: none;
     margin: 8px;
@@ -118,8 +121,17 @@ h1, h2, h3, form {
     text-decoration: none;
     color: black;
     transition: color ease 0.25s;
-  }
+}
+
 .levellistitem a:hover {
+    color: #0091ff;
+}
+.panelitem {
+    text-decoration: none;
+    color: black;
+    transition: color ease 0.25s;
+}
+.panelitem:hover {
     color: #0091ff;
 }
 img {
