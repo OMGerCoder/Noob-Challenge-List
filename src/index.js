@@ -99,6 +99,8 @@ const discordLogin = async(req, res, next) => {
 		}).then(result => {
 			result.json().then(info => {
 				res.locals.info = info;
+				
+
 				next();
 			})
 		})
@@ -127,8 +129,9 @@ app.get('/', (req, res) => {
 	db.Models.listlvl.find({}).sort({placement: 1}).populate('verification').exec((err, docs) => {
 		const lvls = [];
 		docs.forEach((element) => {
-			lvls.push({placement: element.placement, name: element.verification.lvlname, author: element.verification.creator, points: element.points});
+			lvls.push({lvlid: element.lvlid, placement: element.placement, name: element.verification.lvlname, author: element.verification.creator, points: element.points});
 		})
+		console.log(res.locals.info.isMod);
 		res.render('list', {levels: lvls, authorized: checkAuthorized(res), info: res.locals.info})
 	})
 	

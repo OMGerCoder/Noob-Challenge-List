@@ -11,7 +11,7 @@ html
       each val in levels
         div(class="levellistitem")
           span #{levels.indexOf(val) + 1}.
-          img(src="https://noobchallengelist.com/levelimgs/placeholder.png")
+          img(src="https://noobchallengelist.com/levelimgs/" + val.lvlid + ".png" onerror="this.src = 'https://noobchallengelist.com/levelimgs/placeholder.png';")
           span(class="bold" style="font-size: 20pt") #{val.name}
           span By #{val.author}
           span
