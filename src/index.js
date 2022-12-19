@@ -185,6 +185,7 @@ app.get('/lvl/:placement', async(req, res) => {
 					var isEmbeddable = false;
 					var isYoutube = false 
 					var proof = dataDoc.videoProof;
+					var origLink = proof;
 					if(dataDoc.videoProof.startsWith("https://streamable.com/")) {
 						isEmbeddable = true
 						const videoId = proof.slice(23);
@@ -195,7 +196,6 @@ app.get('/lvl/:placement', async(req, res) => {
 						isYoutube = true;
 						const videoId = proof.slice(17);
 						const link = "https://www.youtube.com/embed/".concat(videoId);
-						console.log(link);
 						proof = link;
 					}
 					res.render('level', {
@@ -207,6 +207,7 @@ app.get('/lvl/:placement', async(req, res) => {
 						points: doc.points,
 						isStreamable: isEmbeddable, 
 						isYoutube: isYoutube,
+						origLink: origLink,
 						authorized: checkAuthorized(res), 
 						info: res.locals.info
 					})
