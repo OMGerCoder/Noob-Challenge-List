@@ -60,7 +60,7 @@ background-color: #111;
     display: flex;
     flex-direction: column; 
 }
-.submitrecord {
+.submitrecord, .editrecord {
     display: inline-block;
     padding-right: 20px;
     vertical-align: top;

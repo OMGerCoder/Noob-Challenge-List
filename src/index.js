@@ -446,6 +446,69 @@ app.get('/panel/edit/:lvlid', async(req, res) => {
 		res.json({loggedIn: false})
 	}
 })
+app.post('/api/edit', async(req, res) => {
+	const nclguild = await client.guilds.fetch(process.env.GUILDID);
+	if(checkAuthorized(res)) {
+		try {
+			const currentMember = await nclguild.members.fetch(res.locals.info.id)
+			if (currentMember.roles.cache.has('922079625482477599')) {
+				if(!Number.isSafeInteger(parseInt(req.body.lvlid))) {
+					res.json({error: "levelidinvalid"})
+					
+				} else {
+					await db.Models.verification.findOne({lvlid: parseInt(req.body.lvlid)}, async(err, doc) => {
+						if(!doc) {
+							res.json({error: "cannotFindDoc"})
+						} else {
+							await db.Models.verification.findOne({lvlid: doc.lvlid.toString()}, async(err, vdoc) => {
+								if(req.body.lvlname != "") {
+									vdoc.lvlname = req.body.lvlname;
+									await vdoc.save();
+									res.send("Edit successful")
+									return;
+								}
+								if(req.body.videoproof != "") {
+									vdoc.videoProof = req.body.videoproof;
+									await vdoc.save();
+									res.send("Edit successful")
+									return;
+								}
+							})
+						}
+					})
+				}
+			} else {
+				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info})
+			}
+			
+		} catch(err) {
+			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
+		}
+	} else {
+		res.json({loggedIn: false})
+	}
+})
+app.get('/panel', async(req, res) => {
+	const nclguild = await client.guilds.fetch(process.env.GUILDID);
+	if(checkAuthorized(res)) {
+		try {
+			const currentMember = await nclguild.members.fetch(res.locals.info.id)
+			if (currentMember.roles.cache.has('922079625482477599')) {
+				res.render('modpanel', {
+					authorized: checkAuthorized(res), 
+					info: res.locals.info
+				})
+			} else {
+				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info})
+			}
+			
+		} catch(err) {
+			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
+		}
+	} else {
+		res.json({loggedIn: false})
+	}
+})
 https.createServer({
 	key: privateKey,
 	cert: cert

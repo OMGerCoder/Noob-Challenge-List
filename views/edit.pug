@@ -5,4 +5,14 @@ html
     title Moderator Panel
   body
     include includes/menubar.pug
-    h1 test
+    div(class="editrecord" id="editgeneral")
+      h1 Edit Record
+      p Level id: #{lvlid}
+      form(action="/api/edit", method="POST")
+        p Level Name:
+        input(type="text", name="lvlname", value="")
+        p Video Proof link
+        input(type="url", name="videoproof", value="")
+        input(type="hidden", name="lvlid", value=lvlid)
+        br
+        input(type="submit", value="Submit")
