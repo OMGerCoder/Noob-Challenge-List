@@ -90,7 +90,7 @@ footer {
     padding-bottom: 4px;
     text-align: center;
 }
-h1, h2, h3, form {
+h1, h2, h3, form, p {
     margin-left: 8px;
 }
 .levellistitem {
