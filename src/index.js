@@ -362,17 +362,41 @@ app.post('/api/submit/victory', async(req, res) => {
 		}
 	})
 })
-app.get("/api/delete/:placement", async(req, res) => {
+app.get("/api/delete/:lvlid", async(req, res) => {
 	const nclguild = await client.guilds.fetch(process.env.GUILDID);
 	if(checkAuthorized(res)) {
 		try {
 			const currentMember = await nclguild.members.fetch(res.locals.info.id)
 			if (currentMember.roles.cache.has('922079625482477599')) {
-				if(!Number.isSafeInteger(parseInt(req.params.placement))) {
+				if(!Number.isSafeInteger(parseInt(req.params.lvlid))) {
 					res.send('NaN (Not a number)');
 					
 				} else {
-					
+					await db.Models.listlvl.findOne({lvlid: parseInt(req.params.lvlid)}, (err, doc) => {
+						if(!doc) {
+							res.json({error: "cannotFindDoc"})
+						} else {
+							doc.remove();
+							db.Models.listlvl.find({placement: {$gte : doc.placement}}, (err, docs) => {
+								for(const belowdoc of docs) {
+									const oldPoints = belowdoc.points;
+									
+									if(belowdoc.placement <= 50) {
+										belowdoc.points += 2;
+									}
+									belowdoc.placement -= 1;
+									belowdoc.save();
+								}
+							})
+							db.Models.user.find({levels:doc.lvlid.toString()}, (err, users) => {
+								users.forEach(user => {
+									user.levels.splice(user.levels.indexOf(doc.lvlid.toString()), 1);
+									user.save();
+								}) 
+							})
+							res.redirect('/');
+						}
+					})
 				}
 			} else {
 				res.json({isMod: false})
@@ -380,6 +404,43 @@ app.get("/api/delete/:placement", async(req, res) => {
 			
 		} catch(err) {
 			res.json({inGuild: false})
+		}
+	} else {
+		res.json({loggedIn: false})
+	}
+})
+app.get('/panel/edit/:lvlid', async(req, res) => {
+	const nclguild = await client.guilds.fetch(process.env.GUILDID);
+	if(checkAuthorized(res)) {
+		try {
+			const currentMember = await nclguild.members.fetch(res.locals.info.id)
+			if (currentMember.roles.cache.has('922079625482477599')) {
+				if(!Number.isSafeInteger(parseInt(req.params.lvlid))) {
+					res.send('NaN (Not a number)');
+					
+				} else {
+					await db.Models.listlvl.findOne({lvlid: parseInt(req.params.lvlid)}, async(err, doc) => {
+						if(!doc) {
+							res.json({error: "cannotFindDoc"})
+						} else {
+							await db.Models.verification.findOne({lvlid: doc.lvlid.toString()}, (err, vdoc) => {
+								res.render('edit', {
+									lvlname: vdoc.lvlname,
+									videoProof: vdoc.videoProof,
+									lvlid: doc.lvlid,
+									authorized: checkAuthorized(res), 
+									info: res.locals.info
+								})
+							})
+						}
+					})
+				}
+			} else {
+				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info})
+			}
+			
+		} catch(err) {
+			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
 		}
 	} else {
 		res.json({loggedIn: false})
