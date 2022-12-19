@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@100&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@100;600&display=swap');
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
-@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@100&family=Play:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Play:wght@700&display=swap');
 #menubar {
 list-style-type: none;
 margin: 8px;
@@ -62,6 +62,7 @@ background-color: #111;
 .list {
     display: flex;
     flex-direction: column; 
+    margin-left: 8px;
 }
 .submitrecord, .editrecord {
     display: inline-block;
@@ -106,7 +107,7 @@ h1, h2, h3, form, p {
     border-radius: 5px;
     padding: 8px;
     background-color: white;
-    box-shadow: 0 0 5px #8f8f8f;
+    box-shadow: 0 0 10px #8f8f8f;
     margin-top: 20px;
     margin-bottom: 20px;
   }
@@ -163,12 +164,27 @@ span {
     padding: 8px;
     border: 1px solid white;
     border-radius: 5px;
-    box-shadow: 0 0 10px #8f8f8f;
+    box-shadow: 0 0 5px #8f8f8f;
 }
 .griditem p {
     margin: 0px;
     text-align: center;
 }
+.bluelink {
+    color: black;
+    transition: color ease 0.25s;
+}
+.bluelink:hover {
+    color: #0091FF
+}
+.redlink {
+    color: black;
+    transition: color ease 0.25s;
+}
+.redlink:hover {
+    color: #ff0000;
+}
+
 @media screen and (max-width: 600px) {
     .menubar.responsive {position: relative;}
     .menubar.responsive a.icon {

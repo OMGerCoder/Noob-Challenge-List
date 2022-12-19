@@ -365,6 +365,37 @@ app.post('/api/submit/victory', async(req, res) => {
 		}
 	})
 })
+app.get('/api/deletever/:lvlid', async(req, res) => {
+	const nclguild = await client.guilds.fetch(process.env.GUILDID);
+	if(checkAuthorized(res)) {
+		try {
+			const currentMember = await nclguild.members.fetch(res.locals.info.id)
+			if (currentMember.roles.cache.has('922079625482477599')) {
+				if(!Number.isSafeInteger(parseInt(req.params.lvlid))) {
+					res.send('NaN (Not a number)');
+					
+				} else {
+					await db.Models.verification.findOne({lvlid: parseInt(req.params.lvlid)}, (err, doc) => {
+						if(!doc) {
+							res.json({error: "cannotFindDoc"})
+						} else {
+							doc.remove();
+							
+							res.redirect('/panel');
+						}
+					})
+				}
+			} else {
+				res.json({isMod: false})
+			}
+			
+		} catch(err) {
+			res.json({inGuild: false})
+		}
+	} else {
+		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info})
+	}
+})
 app.get("/api/delete/:lvlid", async(req, res) => {
 	const nclguild = await client.guilds.fetch(process.env.GUILDID);
 	if(checkAuthorized(res)) {
@@ -412,6 +443,7 @@ app.get("/api/delete/:lvlid", async(req, res) => {
 		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info})
 	}
 })
+
 app.get('/panel/edit/:lvlid', async(req, res) => {
 	const nclguild = await client.guilds.fetch(process.env.GUILDID);
 	if(checkAuthorized(res)) {

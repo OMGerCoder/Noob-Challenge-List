@@ -11,6 +11,8 @@ html
     div(class="flexgrid")
         each lvl in unplacedLvls
             div(class="griditem")
-                p=lvl.lvlname
+                p(class="bold")=lvl.lvlname
                 p=lvl.lvlid
+                a(href=lvl.videoProof, class="bluelink") Video Proof
+                a(href="/api/deletever/" + lvl.lvlid, class="redlink") Click to delete
     include includes/footer.pug
