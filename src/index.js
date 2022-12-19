@@ -124,14 +124,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(upload.array()); 
 app.use(express.static('public'))
 app.use(discordLogin);
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
 
 	db.Models.listlvl.find({}).sort({placement: 1}).populate('verification').exec((err, docs) => {
 		const lvls = [];
 		docs.forEach((element) => {
 			lvls.push({lvlid: element.lvlid, placement: element.placement, name: element.verification.lvlname, author: element.verification.creator, points: element.points});
 		})
-		console.log(res.locals.info.isMod);
+		
 		res.render('list', {levels: lvls, authorized: checkAuthorized(res), info: res.locals.info})
 	})
 	
@@ -175,6 +175,20 @@ app.get('/rules', async(req, res) => {
 	})
 })
 app.get('/lvl/:placement', async(req, res) => {
+	
+	var adminPanelAccess = false;
+	const nclguild = await client.guilds.fetch(process.env.GUILDID);
+	if(checkAuthorized(res)) {
+		try {
+			const currentMember = await nclguild.members.fetch(res.locals.info.id)
+			if (currentMember.roles.cache.has('922079625482477599')) {
+				adminPanelAccess = true;
+			}
+			
+		} catch(err) {
+			
+		}
+	}
 	if(!Number.isSafeInteger(parseInt(req.params.placement))) {
 		res.send('NaN (Not a number)');
 		
@@ -202,6 +216,7 @@ app.get('/lvl/:placement', async(req, res) => {
 						proof = link;
 					}
 					res.render('level', {
+						placement: doc.placement,
 						lvlname: dataDoc.lvlname,
 						creator: dataDoc.creator,
 						verifier: dataDoc.verifier,
@@ -212,7 +227,8 @@ app.get('/lvl/:placement', async(req, res) => {
 						isYoutube: isYoutube,
 						origLink: origLink,
 						authorized: checkAuthorized(res), 
-						info: res.locals.info
+						info: res.locals.info,
+						adminPanelAccess: adminPanelAccess
 					})
 					
 				})
@@ -345,6 +361,29 @@ app.post('/api/submit/victory', async(req, res) => {
 			})
 		}
 	})
+})
+app.get("/api/delete/:placement", async(req, res) => {
+	const nclguild = await client.guilds.fetch(process.env.GUILDID);
+	if(checkAuthorized(res)) {
+		try {
+			const currentMember = await nclguild.members.fetch(res.locals.info.id)
+			if (currentMember.roles.cache.has('922079625482477599')) {
+				if(!Number.isSafeInteger(parseInt(req.params.placement))) {
+					res.send('NaN (Not a number)');
+					
+				} else {
+					
+				}
+			} else {
+				res.json({isMod: false})
+			}
+			
+		} catch(err) {
+			res.json({inGuild: false})
+		}
+	} else {
+		res.json({loggedIn: false})
+	}
 })
 https.createServer({
 	key: privateKey,
