@@ -497,9 +497,27 @@ app.get('/panel', async(req, res) => {
 		try {
 			const currentMember = await nclguild.members.fetch(res.locals.info.id)
 			if (currentMember.roles.cache.has('922079625482477599')) {
-				res.render('modpanel', {
-					authorized: checkAuthorized(res), 
-					info: res.locals.info
+				const unplacedcollection = new Collection();
+				db.Models.verification.find({}, (err, vdocs) => {
+					for(const vdoc of vdocs) {
+						unplacedcollection.set(vdoc.lvlid, vdoc);
+						
+					}
+					db.Models.listlvl.find({}, (err, docs) => {
+						for(const vdoc of vdocs) {
+							for(const doc of docs) {
+								if(doc.lvlid == parseInt(vdoc.lvlid)) {
+									unplacedcollection.delete(vdoc.lvlid)
+								}
+							}
+						}
+						const unplacedLvls = Array.from(unplacedcollection.values())
+						res.render('verificationlist', {
+							unplacedLvls: unplacedLvls,
+							authorized: checkAuthorized(res),
+							info: res.locals.info
+						})
+					})
 				})
 			} else {
 				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info})
