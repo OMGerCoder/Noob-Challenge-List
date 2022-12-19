@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@100&display=swap');
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@100&family=Play:wght@700&display=swap');
 #menubar {
 list-style-type: none;
 margin: 8px;
@@ -7,6 +8,9 @@ padding: 0;
 overflow: hidden;
 background-color: #333;
 border-radius: 25px;
+}
+#listtitle {
+    font-family: 'Play', sans-serif;
 }
 body {
     margin: 0px;
@@ -56,7 +60,6 @@ background-color: #111;
     color: black;
 }
 .list {
-    margin-left: 8px;
     display: flex;
     flex-direction: column; 
 }

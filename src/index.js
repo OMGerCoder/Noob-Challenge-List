@@ -124,7 +124,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(upload.array()); 
 app.use(express.static('public'))
 app.use(discordLogin);
-app.get('/', async (req, res) => {
+app.get('/', async(req, res) => {
+	res.render('home', {authorized: checkAuthorized(res), info: res.locals.info})
+}) 
+app.get('/list', async (req, res) => {
 
 	db.Models.listlvl.find({}).sort({placement: 1}).populate('verification').exec((err, docs) => {
 		const lvls = [];
@@ -239,7 +242,7 @@ app.get('/lvl/:placement', async(req, res) => {
 app.get('/submit', async(req, res) => {
 	const nclguild = await client.guilds.fetch(process.env.GUILDID);
 	if(!checkAuthorized(res)) {
-		res.json({loggedIn: false})
+		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info})
 	} else {
 		try {
 			await nclguild.members.fetch(res.locals.info.id)
@@ -278,7 +281,7 @@ app.get('/api/login', async(req, res) => {
 				console.log(params.toString());
 				return;
 			}
-			res.redirect('/');
+			res.redirect('/list');
 			
 		});
 	})
@@ -394,7 +397,7 @@ app.get("/api/delete/:lvlid", async(req, res) => {
 									user.save();
 								}) 
 							})
-							res.redirect('/');
+							res.redirect('/list');
 						}
 					})
 				}
@@ -406,7 +409,7 @@ app.get("/api/delete/:lvlid", async(req, res) => {
 			res.json({inGuild: false})
 		}
 	} else {
-		res.json({loggedIn: false})
+		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info})
 	}
 })
 app.get('/panel/edit/:lvlid', async(req, res) => {
@@ -443,7 +446,7 @@ app.get('/panel/edit/:lvlid', async(req, res) => {
 			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
 		}
 	} else {
-		res.json({loggedIn: false})
+		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info})
 	}
 })
 app.post('/api/edit', async(req, res) => {
@@ -485,7 +488,7 @@ app.post('/api/edit', async(req, res) => {
 			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
 		}
 	} else {
-		res.json({loggedIn: false})
+		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info})
 	}
 })
 app.get('/panel', async(req, res) => {
@@ -506,7 +509,7 @@ app.get('/panel', async(req, res) => {
 			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
 		}
 	} else {
-		res.json({loggedIn: false})
+		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info})
 	}
 })
 https.createServer({
