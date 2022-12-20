@@ -1,3 +1,4 @@
+/* eslint-disable no-loss-of-precision */
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
@@ -27,7 +28,7 @@ module.exports = {
 							var points = 100;
 							var subtractionTimes = placement - 1;
 							for(var i=0; i < subtractionTimes; i++) {
-							  points = points - 2;
+								points = points - 2;
 							}
 							const listlvl = new db.Models.listlvl({
 								lvlid: lvlid,

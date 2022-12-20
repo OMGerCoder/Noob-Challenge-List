@@ -1,5 +1,5 @@
 const { Client, Collection, Intents } = require('discord.js');
-const { token } = require('./config.json');
+
 const fs = require('fs')
 const { REST } = require('@discordjs/rest');
 const https = require('https')
@@ -9,7 +9,7 @@ client.commands = new Collection();
 const commandFiles = fs.readdirSync('./src/cmd').filter(file => file.endsWith('.js'));
 const Database = require("./db/database");
 const db = new Database(client);
-const config = require("./config.json")
+
 const dotenv = require("dotenv");
 const commands = require("./deploy-commands");
 dotenv.config();
@@ -87,6 +87,7 @@ const express = require('express');
 var bodyParser = require('body-parser');
 var multer = require('multer');
 var upload = multer();
+// eslint-disable-next-line no-unused-vars
 const http = require('http');
 const cookieParser = require('cookie-parser');
 const app = express();
@@ -188,9 +189,7 @@ app.get('/lvl/:placement', async(req, res) => {
 				adminPanelAccess = true;
 			}
 			
-		} catch(err) {
-			
-		}
+		} catch(err) { /* empty */ }
 	}
 	if(!Number.isSafeInteger(parseInt(req.params.placement))) {
 		res.send('NaN (Not a number)');
@@ -314,9 +313,7 @@ app.post('/api/submit/verification', async(req, res) => {
 			}
 			doc.save();
 			// console.log(doc);
-			if(process.env.TESTMODE == "TRUE") {
-				
-			} else {
+			if(process.env.TESTMODE == "TRUE") { /* empty */ } else {
 				// <@&${process.env.LISTTEAM_ROLEID}> List team ping
 				nclguild.channels.cache.get(process.env.TODO_CHANNELID).send(`\n**${data.lvlname}**\nBy **${data.creator}**\n${data.lvlid}\nVerified by **${data.verifier}**\n${data.videoProof}`);
 			}
@@ -345,7 +342,7 @@ app.post('/api/submit/victory', async(req, res) => {
 					docUser.save();
 				}
 			})
-			var lvlname = null;
+			
 			db.Models.listlvl.findOne({lvlid: req.body.lvlid}, (err, lvldoc) => {
 				if (lvldoc === null) {
 					res.render('error', {error: 'That level isnt on the list!', authorized: checkAuthorized(res), info: res.locals.info})	
@@ -353,9 +350,7 @@ app.post('/api/submit/victory', async(req, res) => {
 				} else {
 					db.Models.verification.findOne({lvlid: req.body.lvlid}, (err, namedoc) => {
 						doc.save();
-					if(process.env.TESTMODE == "TRUE") {
-						
-					} else {
+					if(process.env.TESTMODE == "TRUE") { /* empty */ } else {
 						// <@&${process.env.LISTTEAM_ROLEID}> List team ping
 						nclguild.channels.cache.get(process.env.RECORDS_CHANNELID).send(`**${namedoc.lvlname}**\nCompleted by \`${user.username}#${user.discriminator}\`\n${req.body.videoproof}`);
 					}
@@ -414,6 +409,7 @@ app.get("/api/delete/:lvlid", async(req, res) => {
 							doc.remove();
 							db.Models.listlvl.find({placement: {$gte : doc.placement}}, (err, docs) => {
 								for(const belowdoc of docs) {
+									// eslint-disable-next-line no-unused-vars
 									const oldPoints = belowdoc.points;
 									
 									if(belowdoc.placement <= 50) {
@@ -602,8 +598,61 @@ app.post('/api/movelevel/', async(req, res) => {
 		try {
 			const currentMember = await nclguild.members.fetch(res.locals.info.id)
 			if (currentMember.roles.cache.has('922079625482477599')) {
-				
-				
+				if(!Number.isSafeInteger(parseInt(req.body.lvlid)) || !Number.isSafeInteger(parseInt(req.body.placement))) {
+					res.send('NaN (Not a number)');
+					
+				} else {
+					const lvlid = parseInt(req.body.lvlid);
+
+					const newPlacement = parseInt(req.body.placement);
+					await db.Models.listlvl.findOne({lvlid: lvlid}, (err, doc) => {
+						if(!doc) {
+							res.json({error: "cannotFindDoc"})
+						} else {
+							if(newPlacement > 50) {
+								res.render('error', {error: 'you cannot place levels any lower than 50', authorized: checkAuthorized(res), info: res.locals.info})
+							} else {
+								doc.remove();
+								db.Models.listlvl.find({placement: {$gte : doc.placement}}, (err, docs) => {
+									for(const belowdoc of docs) {
+										// eslint-disable-next-line no-unused-vars
+										const oldPoints = belowdoc.points;
+										
+										if(belowdoc.placement <= 50) {
+											belowdoc.points += 2;
+										}
+										belowdoc.placement -= 1;
+										belowdoc.save();
+									}
+								})
+								db.Models.verification.findOne({lvlid: lvlid}, async(err, vdoc) => {
+									var points = 100;
+									var subtractionTimes = newPlacement - 1;
+									for(var i=0; i < subtractionTimes; i++) {
+										points = points - 2;
+									}
+									const listlvl = new db.Models.listlvl({
+										lvlid: lvlid,
+										placement: newPlacement,
+										points: points,
+										verification: vdoc.get('_id')
+									})
+									await db.Models.listlvl.find({placement: {$gte : newPlacement}}, async(err, docs) => {
+										docs.forEach(doc => {
+											doc.placement += 1;
+											if(doc.points != 0) {
+												doc.points -= 2;
+											}
+											doc.save();	
+										});
+									})
+									listlvl.save();
+								})
+							}
+							
+						}
+					})
+				}
 			} else {
 				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info})
 			}

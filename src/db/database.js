@@ -47,6 +47,7 @@ class Database {
             useNewUrlParser: true,
             useUnifiedTopology: true
         });
+        // eslint-disable-next-line no-unused-vars
         return new Promise((resolve, reject) => {
             mongoose.connection.on("open", () => resolve());
         });
