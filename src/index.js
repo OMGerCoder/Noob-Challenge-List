@@ -596,17 +596,24 @@ app.get('/api/resetpoints', async(req, res) => {
 	}
 
 })
-app.post('/fixplacements', async(req, res) => {
-	db.Models.listlvl.find({}).sort({placement: 1}).exec(async(err, docs) => {
-		index = 1;
-		for (const lvl of docs) {
-			lvl.placement = index;
-			await lvl.save();
-			index++;
+app.post('/api/movelevel/', async(req, res) => {
+	const nclguild = await client.guilds.fetch(process.env.GUILDID);
+	if(checkAuthorized(res)) {
+		try {
+			const currentMember = await nclguild.members.fetch(res.locals.info.id)
+			if (currentMember.roles.cache.has('922079625482477599')) {
+				
+				
+			} else {
+				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info})
+			}
+			
+		} catch(err) {
+			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
 		}
-		res.json({msg: 'done'})
-	})
-	
+	} else {
+		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info})
+	}
 })
 https.createServer({
 	key: privateKey,
