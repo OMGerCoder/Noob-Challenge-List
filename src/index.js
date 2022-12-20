@@ -478,6 +478,40 @@ app.get('/panel/edit/:lvlid', async(req, res) => {
 		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info})
 	}
 })
+app.get('/panel/move/:lvlid', async(req, res) => {
+	const nclguild = await client.guilds.fetch(process.env.GUILDID);
+	if(checkAuthorized(res)) {
+		try {
+			const currentMember = await nclguild.members.fetch(res.locals.info.id)
+			if (currentMember.roles.cache.has('922079625482477599')) {
+				if(!Number.isSafeInteger(parseInt(req.params.lvlid))) {
+					res.send('NaN (Not a number)');
+					
+				} else {
+					await db.Models.listlvl.findOne({lvlid: parseInt(req.params.lvlid)}, async(err, doc) => {
+						if(!doc) {
+							res.json({error: "cannotFindDoc"})
+						} else {
+							res.render('move', {
+								lvlid: req.params.lvlid,
+								placement: doc.placement,
+								authorized: checkAuthorized(res), 
+								info: res.locals.info
+							})
+						}
+					})
+				}
+			} else {
+				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info})
+			}
+			
+		} catch(err) {
+			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
+		}
+	} else {
+		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info})
+	}
+})
 app.post('/api/edit', async(req, res) => {
 	const nclguild = await client.guilds.fetch(process.env.GUILDID);
 	if(checkAuthorized(res)) {
@@ -647,7 +681,9 @@ app.post('/api/movelevel/', async(req, res) => {
 										});
 									})
 									listlvl.save();
+									res.redirect('/panel');
 								})
+
 							}
 							
 						}

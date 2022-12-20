@@ -1,0 +1,15 @@
+doctype html
+html
+  head
+    include includes/header.pug
+    title Moderator Panel
+  body
+    include includes/menubar.pug
+    div(class="movelevel" id="editgeneral")
+      h1 Move Level
+      p Level id: #{lvlid}
+      form(action="/api/movelevel", method="POST")
+        input(type="number", name="placement", value=placement)
+        input(type="hidden", name="lvlid", value=lvlid)
+        br
+        input(type="submit", value="Submit")
