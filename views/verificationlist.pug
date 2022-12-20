@@ -13,6 +13,8 @@ html
             div(class="griditem")
                 p(class="bold")=lvl.lvlname
                 p=lvl.lvlid
+                p= lvl.creator
+                p Verified by #{lvl.verifier}
                 a(href=lvl.videoProof, class="bluelink") Video Proof
                 a(href="/api/deletever/" + lvl.lvlid, class="redlink") Click to delete
     include includes/footer.pug

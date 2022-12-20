@@ -297,9 +297,10 @@ app.post('/api/submit/verification', async(req, res) => {
 		if(doc) {
 			res.render('error', {error: 'You cannot submit duplicates!', authorized: checkAuthorized(res), info: res.locals.info})	
 		} else {
+			console.log(req.body.lvlid);
 			const doc = new db.Models.verification({
 				lvlname: req.body.lvlname,
-				lvlid: req.body.lvlid,
+				lvlid: req.body.lvlid[0],
 				videoProof: req.body.videoproof,
 				creator: req.body.creator,
 				verifier: req.body.verifier
