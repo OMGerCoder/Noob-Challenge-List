@@ -17,4 +17,7 @@ html
                 p Verified by #{lvl.verifier}
                 a(href=lvl.videoProof, class="bluelink") Video Proof
                 a(href="/api/deletever/" + lvl.lvlid, class="redlink") Click to delete
+    h1 Recalculate Points
+    h3 Warning: This action is irreversible!
+    a(href="/api/resetpoints", class="redlink rightmargin") Click Here
     include includes/footer.pug

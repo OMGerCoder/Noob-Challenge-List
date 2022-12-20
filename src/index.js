@@ -563,6 +563,58 @@ app.get('/panel', async(req, res) => {
 		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info})
 	}
 })
+app.get('/api/resetpoints', async(req, res) => {
+	const nclguild = await client.guilds.fetch(process.env.GUILDID);
+	if(checkAuthorized(res)) {
+		try {
+			const currentMember = await nclguild.members.fetch(res.locals.info.id)
+			if (currentMember.roles.cache.has('922079625482477599')) {
+				db.Models.listlvl.find({placement: {$lte : 50}}, async(err, docs) => {
+					for (var doc of docs) {
+						doc.points = 100 - (2 * (doc.placement - 1));
+						
+						await doc.save();
+					}		
+				})
+				db.Models.listlvl.find({placement: {$gte : 51}}, async(err, docs) => {
+					for (var doc of docs) {
+						doc.points = 0;
+						await doc.save();
+					}		
+				})
+				res.redirect('/panel')
+				
+			} else {
+				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info})
+			}
+			
+		} catch(err) {
+			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
+		}
+	} else {
+		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info})
+	}
+
+})
+app.post('/api/movelevel/', async(req, res) => {
+	const nclguild = await client.guilds.fetch(process.env.GUILDID);
+	if(checkAuthorized(res)) {
+		try {
+			const currentMember = await nclguild.members.fetch(res.locals.info.id)
+			if (currentMember.roles.cache.has('922079625482477599')) {
+				
+				
+			} else {
+				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info})
+			}
+			
+		} catch(err) {
+			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info})
+		}
+	} else {
+		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info})
+	}
+})
 https.createServer({
 	key: privateKey,
 	cert: cert

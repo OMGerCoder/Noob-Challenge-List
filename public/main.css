@@ -184,7 +184,9 @@ span {
 .redlink:hover {
     color: #ff0000;
 }
-
+.rightmargin {
+    margin-left: 8px;
+}
 @media screen and (max-width: 600px) {
     .menubar.responsive {position: relative;}
     .menubar.responsive a.icon {
