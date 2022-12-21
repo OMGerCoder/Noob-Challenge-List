@@ -28,7 +28,7 @@ module.exports = {
 							var points = 100;
 							var subtractionTimes = placement - 1;
 							for(var i=0; i < subtractionTimes; i++) {
-								points = points - 2;
+								points = points - 1;
 							}
 							const listlvl = new db.Models.listlvl({
 								lvlid: lvlid,
@@ -40,7 +40,7 @@ module.exports = {
 								docs.forEach(doc => {
 									doc.placement += 1;
 									if(doc.points != 0) {
-										doc.points -= 2;
+										doc.points -= 1;
 									}
 									doc.save();	
 								});

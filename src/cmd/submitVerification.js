@@ -26,7 +26,7 @@ module.exports = {
 					creator: creator,
 					verifier: verifier
 				})
-				data = {
+				var data = {
 					lvlname: lvlname,
 					lvlid: lvlid,
 					videoProof: videoProof,

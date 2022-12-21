@@ -412,8 +412,8 @@ app.get("/api/delete/:lvlid", async(req, res) => {
 									// eslint-disable-next-line no-unused-vars
 									const oldPoints = belowdoc.points;
 									
-									if(belowdoc.placement <= 50) {
-										belowdoc.points += 2;
+									if(belowdoc.placement <= 100) {
+										belowdoc.points += 1;
 									}
 									belowdoc.placement -= 1;
 									belowdoc.save();
@@ -599,14 +599,14 @@ app.get('/api/resetpoints', async(req, res) => {
 		try {
 			const currentMember = await nclguild.members.fetch(res.locals.info.id)
 			if (currentMember.roles.cache.has('922079625482477599')) {
-				db.Models.listlvl.find({placement: {$lte : 50}}, async(err, docs) => {
+				db.Models.listlvl.find({placement: {$lte : 100}}, async(err, docs) => {
 					for (var doc of docs) {
-						doc.points = 100 - (2 * (doc.placement - 1));
+						doc.points = 100 - (1 * (doc.placement - 1));
 						
 						await doc.save();
 					}		
 				})
-				db.Models.listlvl.find({placement: {$gte : 51}}, async(err, docs) => {
+				db.Models.listlvl.find({placement: {$gte : 101}}, async(err, docs) => {
 					for (var doc of docs) {
 						doc.points = 0;
 						await doc.save();
@@ -643,7 +643,7 @@ app.post('/api/movelevel/', async(req, res) => {
 						if(!doc) {
 							res.json({error: "cannotFindDoc"})
 						} else {
-							if(newPlacement > 50) {
+							if(newPlacement > 100) {
 								res.render('error', {error: 'you cannot place levels any lower than 50', authorized: checkAuthorized(res), info: res.locals.info})
 							} else {
 								doc.remove();
@@ -652,8 +652,8 @@ app.post('/api/movelevel/', async(req, res) => {
 										// eslint-disable-next-line no-unused-vars
 										const oldPoints = belowdoc.points;
 										
-										if(belowdoc.placement <= 50) {
-											belowdoc.points += 2;
+										if(belowdoc.placement <= 100) {
+											belowdoc.points += 1;
 										}
 										belowdoc.placement -= 1;
 										belowdoc.save();
@@ -663,7 +663,7 @@ app.post('/api/movelevel/', async(req, res) => {
 									var points = 100;
 									var subtractionTimes = newPlacement - 1;
 									for(var i=0; i < subtractionTimes; i++) {
-										points = points - 2;
+										points = points - 1;
 									}
 									const listlvl = new db.Models.listlvl({
 										lvlid: lvlid,
@@ -675,7 +675,7 @@ app.post('/api/movelevel/', async(req, res) => {
 										docs.forEach(doc => {
 											doc.placement += 1;
 											if(doc.points != 0) {
-												doc.points -= 2;
+												doc.points -= 1;
 											}
 											doc.save();	
 										});

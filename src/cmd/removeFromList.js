@@ -17,14 +17,15 @@ module.exports = {
 				if(!doc) {
 					interaction.reply({content: "That level is not on the list", ephemeral: true});
 				} else {
+					// eslint-disable-next-line no-unused-vars
 					var canAddPoints = false;
 					doc.remove();
 					db.Models.listlvl.find({placement: {$gte : doc.placement}}, (err, docs) => {
 						for(const belowdoc of docs) {
 							const oldPoints = belowdoc.points;
 							
-							if(belowdoc.placement <= 50) {
-								belowdoc.points += 2;
+							if(belowdoc.placement <= 100) {
+								belowdoc.points += 1;
 							}
 							belowdoc.placement -= 1;
 							belowdoc.save();
