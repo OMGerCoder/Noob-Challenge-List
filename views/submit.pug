@@ -18,6 +18,8 @@ html
             input(type="text", name="creator", value="", required)
             p Verifier
             input(type="text", name="verifier", value="", required)
+            p Tags (no spaces, seperate by ",")
+            input(type="text", name="tags", value="", required)
             br
             input(type="submit", value="Submit")
             if verSuccessful == true
@@ -34,4 +36,3 @@ html
             if vicSuccessful == true
                 p(class="greentext") Successful!
     include includes/footer.pug
-    

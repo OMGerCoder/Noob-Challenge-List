@@ -133,7 +133,13 @@ app.get('/list', async (req, res) => {
 	db.Models.listlvl.find({}).sort({placement: 1}).populate('verification').exec((err, docs) => {
 		const lvls = [];
 		docs.forEach((element) => {
-			lvls.push({lvlid: element.lvlid, placement: element.placement, name: element.verification.lvlname, author: element.verification.creator, points: element.points});
+			if(element.verification.tags) {
+				
+				lvls.push({lvlid: element.lvlid, placement: element.placement, name: element.verification.lvlname, author: element.verification.creator, points: element.points, tags: element.verification.tags});
+			} else {
+				lvls.push({lvlid: element.lvlid, placement: element.placement, name: element.verification.lvlname, author: element.verification.creator, points: element.points, tags: []});
+			}
+			
 		})
 		
 		res.render('list', {levels: lvls, authorized: checkAuthorized(res), info: res.locals.info})
@@ -292,35 +298,44 @@ app.get('/api/logout', (req, res) => {
 })
 app.post('/api/submit/verification', async(req, res) => {
 	const nclguild = await client.guilds.fetch(process.env.GUILDID);
-	await db.Models.verification.findOne({lvlid: req.body.lvlid}, (err, doc) => {
-		if(doc) {
-			res.render('error', {error: 'You cannot submit duplicates!', authorized: checkAuthorized(res), info: res.locals.info})	
-		} else {
-			console.log(req.body.lvlid);
-			const doc = new db.Models.verification({
-				lvlname: req.body.lvlname,
-				lvlid: req.body.lvlid,
-				videoProof: req.body.videoproof,
-				creator: req.body.creator,
-				verifier: req.body.verifier
-			})
-			const data = {
-				lvlname: req.body.lvlname,
-				lvlid: req.body.lvlid,
-				videoProof: req.body.videoproof,
-				creator: req.body.creator,
-				verifier: req.body.verifier
+	const tagsString = req.body.tags;
+	
+	if(/\s/.test(tagsString) || tagsString.startsWith(",") || tagsString.endsWith(",")) {
+		res.render('error', {error: 'Invalid tags. Hint: Tags do not have spaces and are seperated by a comma (no spaces on that too)', authorized: checkAuthorized(res), info: res.locals.info})	
+	} else {
+		await db.Models.verification.findOne({lvlid: req.body.lvlid}, (err, doc) => {
+			if(doc) {
+				res.render('error', {error: 'You cannot submit duplicates!', authorized: checkAuthorized(res), info: res.locals.info})	
+			} else {
+				const tags = tagsString.split(",");
+				const doc = new db.Models.verification({
+					lvlname: req.body.lvlname,
+					lvlid: req.body.lvlid,
+					videoProof: req.body.videoproof,
+					creator: req.body.creator,
+					verifier: req.body.verifier,
+					tags: tags
+				})
+				const data = {
+					lvlname: req.body.lvlname,
+					lvlid: req.body.lvlid,
+					videoProof: req.body.videoproof,
+					creator: req.body.creator,
+					verifier: req.body.verifier
+				}
+				doc.save();
+				// console.log(doc);
+				if(process.env.TESTMODE == "FALSE") {
+					// <@&${process.env.LISTTEAM_ROLEID}> List team ping
+					nclguild.channels.cache.get(process.env.TODO_CHANNELID).send(`\n**${data.lvlname}**\nBy **${data.creator}**\n${data.lvlid}\nVerified by **${data.verifier}**\n${data.videoProof}`);
+				}
+				res.render('submit', {verSuccessful: true, vicSuccessful: false, authorized: checkAuthorized(res), info: res.locals.info})
+				
 			}
-			doc.save();
-			// console.log(doc);
-			if(process.env.TESTMODE == "TRUE") { /* empty */ } else {
-				// <@&${process.env.LISTTEAM_ROLEID}> List team ping
-				nclguild.channels.cache.get(process.env.TODO_CHANNELID).send(`\n**${data.lvlname}**\nBy **${data.creator}**\n${data.lvlid}\nVerified by **${data.verifier}**\n${data.videoProof}`);
-			}
-			res.render('submit', {verSuccessful: true, vicSuccessful: false, authorized: checkAuthorized(res), info: res.locals.info})
-			
-		}
-	})
+		})
+	}
+	
+	
 })
 app.post('/api/submit/victory', async(req, res) => {
 	
@@ -530,14 +545,27 @@ app.post('/api/edit', async(req, res) => {
 								if(req.body.lvlname != "") {
 									vdoc.lvlname = req.body.lvlname;
 									await vdoc.save();
-									res.send("Edit successful")
+									res.send("Edit completed");
 									return;
 								}
 								if(req.body.videoproof != "") {
 									vdoc.videoProof = req.body.videoproof;
 									await vdoc.save();
-									res.send("Edit successful")
+									res.send("Edit completed");
 									return;
+								}
+								if(req.body.tags != "") {
+									const tagsString = req.body.tags;
+									if(/\s/.test(tagsString) || tagsString.startsWith(",") || tagsString.endsWith(",")) {
+										res.render('error', {error: 'Invalid tags. Your other changes have been applied already.', authorized: checkAuthorized(res), info: res.locals.info})
+										return;
+									} else {
+										const tags = tagsString.split(",");
+										vdoc.tags = tags;
+										await vdoc.save();
+										res.send("Edit completed");
+										return;
+									}
 								}
 							})
 						}

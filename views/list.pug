@@ -14,6 +14,8 @@ html
           img(src="https://noobchallengelist.com/levelimgs/" + val.lvlid + ".png" onerror="this.src = 'https://noobchallengelist.com/levelimgs/placeholder.png';")
           span(class="bold" style="font-size: 20pt") #{val.name}
           span By #{val.author}
+          each tag in val.tags
+            span(class="lvltag") #{tag}
           span
             a(href="/lvl/" + val.placement) Click for more info
 
