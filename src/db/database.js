@@ -21,7 +21,8 @@ class Database {
                 lvlid: String,
                 videoProof: String,
                 creator: String,
-                verifier: String
+                verifier: String,
+                tags: [String]
                 
             })),
             
