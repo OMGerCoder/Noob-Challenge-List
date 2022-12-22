@@ -299,7 +299,7 @@ app.post('/api/submit/verification', async(req, res) => {
 			console.log(req.body.lvlid);
 			const doc = new db.Models.verification({
 				lvlname: req.body.lvlname,
-				lvlid: req.body.lvlid[0],
+				lvlid: req.body.lvlid,
 				videoProof: req.body.videoproof,
 				creator: req.body.creator,
 				verifier: req.body.verifier
