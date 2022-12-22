@@ -298,7 +298,7 @@ app.get('/api/logout', (req, res) => {
 })
 app.post('/api/submit/verification', async(req, res) => {
 	const nclguild = await client.guilds.fetch(process.env.GUILDID);
-	const tagsString = req.body.tags;
+	const tagsString = req.body.tags.toLowerCase();
 	
 	if(/\s/.test(tagsString) || tagsString.startsWith(",") || tagsString.endsWith(",")) {
 		res.render('error', {error: 'Invalid tags. Hint: Tags do not have spaces and are seperated by a comma (no spaces on that too)', authorized: checkAuthorized(res), info: res.locals.info})	
@@ -555,7 +555,7 @@ app.post('/api/edit', async(req, res) => {
 									return;
 								}
 								if(req.body.tags != "") {
-									const tagsString = req.body.tags;
+									const tagsString = req.body.tags.toLowerCase();
 									if(/\s/.test(tagsString) || tagsString.startsWith(",") || tagsString.endsWith(",")) {
 										res.render('error', {error: 'Invalid tags. Your other changes have been applied already.', authorized: checkAuthorized(res), info: res.locals.info})
 										return;
