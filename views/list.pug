@@ -15,7 +15,7 @@ html
           span(class="bold" style="font-size: 20pt") #{val.name}
           span By #{val.author}
           each tag in val.tags
-            span(class="lvltag") #{tag}
+            span(class="lvltag tag-" + tag) #{tag}
           span
             a(href="/lvl/" + val.placement) Click for more info
 

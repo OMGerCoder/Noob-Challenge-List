@@ -1,0 +1,49 @@
+.tag-overall {
+    background-color: #252525;
+}
+.tag-timings { 
+    background-color: #689800;
+    
+}
+.tag-cube {
+    background-color: #4CBE32;
+    color: black;
+}
+.tag-wave {
+    background-color: #263ECC;
+}
+.tag-fast {
+    background-color: #A71C43;
+}
+.tag-ship {
+    background-color: #BE32BC;
+}
+.tag-ball {
+    background-color: #BE323C;
+}
+
+.tag-spider {
+    background-color: #9B32BE;
+}
+.tag-ufo {
+    background-color: #CD6C25;
+}
+.tag-dual {
+    background-color: #EFCD58;
+    color: black;
+}
+.tag-swingcopter {
+    background-color: #0d5e3e;
+}
+.tag-robot {
+    background-color: #E9E9E9;
+}
+.tag-memory {
+    background-color: #5530BE;
+}
+.tag-consistency {
+    background-color: #2789A2;
+}
+.tag-twoplayers {
+    background-color: #A58504;
+}
