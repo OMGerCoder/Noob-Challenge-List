@@ -7,11 +7,12 @@ module.exports = {
 		.addIntegerOption(option => option.setName("levelid").setDescription("Level that he beat").setRequired(true)),
         
 	async execute(interaction, db) {
+        // eslint-disable-next-line no-loss-of-precision
         if((interaction.member.roles.cache.some(role => role.id === process.env.LISTTEAM_ROLEID)) || (interaction.user.id == 655225599710855169)) {
         
         const lvlid = await interaction.options.getInteger('levelid').toString();
         const usr = await interaction.options.getMentionable('user');
-        await db.Models.user.findOne({userid: usr.id, levels: lvlid}, (err, doc) => {
+        db.Models.user.findOne({userid: usr.id, levels: lvlid}, (err, doc) => {
             if(doc) {
                 interaction.reply({content: "Sorry, you cannot submit duplicates", ephemeral: true});
             } else {

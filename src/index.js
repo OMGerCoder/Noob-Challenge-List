@@ -22,11 +22,13 @@ for (const file of commandFiles) {
 	// With the key as the command name and the value as the exported module
 	client.commands.set(command.data.name, command);
 }
-
+process.on('warning', (warning) => {
+	console.log(warning.stack);
+})
 client.once('ready', async() => { 
 	console.log(process.env.TESTMODE)
     console.log(`Logged in as ${client.user.tag}!`);
-    
+    mongoose.set('strictQuery', false);
 	db.initiateConnection(process.env.MONGODB).then(() => {
 		console.log("Mongodb connection successful")
 		if(process.env.TESTMODE == "TRUE") {
@@ -154,14 +156,14 @@ app.get('/stats', async(req, res) => {
 		var obj = {};
 		userDocs.forEach(async(user) => {
 			
-			await db.Models.listlvl.find({lvlid: { $in: user.levels}}, async(err, doc) => {
-				obj[user.username] = 0;
-				doc.forEach(async(lvl) => {
-					obj[user.username] += lvl.points;
-				})
+			const doc = await db.Models.listlvl.find({lvlid: { $in: user.levels}})
+			obj[user.username] = 0;
+			doc.forEach(async(lvl) => {
+				obj[user.username] += lvl.points;
+			})
 			
 				
-			})
+			
 			
 		})
 
@@ -258,7 +260,8 @@ app.get('/submit', async(req, res) => {
 		res.render('submit', {verSuccessful: false, vicSuccessful: false, authorized: checkAuthorized(res), info: res.locals.info})
 	}
 })
-const fetch = require('node-fetch')
+const fetch = require('node-fetch');
+const { default: mongoose } = require('mongoose');
 app.get('/api/login', async(req, res) => {
 	const code = req.query.code;
 	
@@ -303,7 +306,7 @@ app.post('/api/submit/verification', async(req, res) => {
 	if(/\s/.test(tagsString) || tagsString.startsWith(",") || tagsString.endsWith(",")) {
 		res.render('error', {error: 'Invalid tags. Hint: Tags do not have spaces and are seperated by a comma (no spaces on that too)', authorized: checkAuthorized(res), info: res.locals.info})	
 	} else {
-		await db.Models.verification.findOne({lvlid: req.body.lvlid}, (err, doc) => {
+		db.Models.verification.findOne({lvlid: req.body.lvlid}, (err, doc) => {
 			if(doc) {
 				res.render('error', {error: 'You cannot submit duplicates!', authorized: checkAuthorized(res), info: res.locals.info})	
 			} else {
@@ -341,7 +344,7 @@ app.post('/api/submit/victory', async(req, res) => {
 	
 	const nclguild = await client.guilds.fetch(process.env.GUILDID);
 	const user = res.locals.info;
-	await db.Models.victor.findOne({userid: user.id, lvlid: req.body.lvlid}, (err, doc) => {
+	db.Models.victor.findOne({userid: user.id, lvlid: req.body.lvlid}, (err, doc) => {
 		if(doc) {
 			res.render('error', {error: 'You cannot submit duplicates!', authorized: checkAuthorized(res), info: res.locals.info})	
 		} else {
@@ -386,7 +389,7 @@ app.get('/api/deletever/:lvlid', async(req, res) => {
 					res.send('NaN (Not a number)');
 					
 				} else {
-					await db.Models.verification.findOne({lvlid: parseInt(req.params.lvlid)}, (err, doc) => {
+					db.Models.verification.findOne({lvlid: parseInt(req.params.lvlid)}, (err, doc) => {
 						if(!doc) {
 							res.json({error: "cannotFindDoc"})
 						} else {
@@ -417,12 +420,13 @@ app.get("/api/delete/:lvlid", async(req, res) => {
 					res.send('NaN (Not a number)');
 					
 				} else {
-					await db.Models.listlvl.findOne({lvlid: parseInt(req.params.lvlid)}, (err, doc) => {
+					db.Models.listlvl.findOne({lvlid: parseInt(req.params.lvlid)}, (err, doc) => {
 						if(!doc) {
 							res.json({error: "cannotFindDoc"})
 						} else {
+							const oldPlacement = doc.placement;
 							doc.remove();
-							db.Models.listlvl.find({placement: {$gte : doc.placement}}, (err, docs) => {
+							db.Models.listlvl.find({placement: {$gte : oldPlacement}}, (err, docs) => {
 								for(const belowdoc of docs) {
 									// eslint-disable-next-line no-unused-vars
 									const oldPoints = belowdoc.points;
@@ -466,11 +470,11 @@ app.get('/panel/edit/:lvlid', async(req, res) => {
 					res.send('NaN (Not a number)');
 					
 				} else {
-					await db.Models.listlvl.findOne({lvlid: parseInt(req.params.lvlid)}, async(err, doc) => {
+					db.Models.listlvl.findOne({lvlid: parseInt(req.params.lvlid)}, async(err, doc) => {
 						if(!doc) {
 							res.json({error: "cannotFindDoc"})
 						} else {
-							await db.Models.verification.findOne({lvlid: doc.lvlid.toString()}, (err, vdoc) => {
+							db.Models.verification.findOne({lvlid: doc.lvlid.toString()}, (err, vdoc) => {
 								res.render('edit', {
 									lvlname: vdoc.lvlname,
 									videoProof: vdoc.videoProof,
@@ -503,7 +507,7 @@ app.get('/panel/move/:lvlid', async(req, res) => {
 					res.send('NaN (Not a number)');
 					
 				} else {
-					await db.Models.listlvl.findOne({lvlid: parseInt(req.params.lvlid)}, async(err, doc) => {
+					db.Models.listlvl.findOne({lvlid: parseInt(req.params.lvlid)}, async(err, doc) => {
 						if(!doc) {
 							res.json({error: "cannotFindDoc"})
 						} else {
@@ -537,11 +541,11 @@ app.post('/api/edit', async(req, res) => {
 					res.json({error: "levelidinvalid"})
 					
 				} else {
-					await db.Models.verification.findOne({lvlid: parseInt(req.body.lvlid)}, async(err, doc) => {
+					db.Models.verification.findOne({lvlid: parseInt(req.body.lvlid)}, async(err, doc) => {
 						if(!doc) {
 							res.json({error: "cannotFindDoc"})
 						} else {
-							await db.Models.verification.findOne({lvlid: doc.lvlid.toString()}, async(err, vdoc) => {
+							db.Models.verification.findOne({lvlid: doc.lvlid.toString()}, async(err, vdoc) => {
 								if(req.body.lvlname != "") {
 									vdoc.lvlname = req.body.lvlname;
 									await vdoc.save();
@@ -667,15 +671,17 @@ app.post('/api/movelevel/', async(req, res) => {
 					const lvlid = parseInt(req.body.lvlid);
 
 					const newPlacement = parseInt(req.body.placement);
-					await db.Models.listlvl.findOne({lvlid: lvlid}, (err, doc) => {
+					db.Models.listlvl.findOne({lvlid: lvlid}, (err, doc) => {
 						if(!doc) {
 							res.json({error: "cannotFindDoc"})
 						} else {
 							if(newPlacement > 100) {
 								res.render('error', {error: 'you cannot place levels any lower than 50', authorized: checkAuthorized(res), info: res.locals.info})
 							} else {
+								const oldPlacement = doc.placement;
 								doc.remove();
-								db.Models.listlvl.find({placement: {$gte : doc.placement}}, (err, docs) => {
+								console.log('debug1');
+								db.Models.listlvl.find({placement: {$gte : oldPlacement}}, (err, docs) => {
 									for(const belowdoc of docs) {
 										// eslint-disable-next-line no-unused-vars
 										const oldPoints = belowdoc.points;
@@ -699,15 +705,15 @@ app.post('/api/movelevel/', async(req, res) => {
 										points: points,
 										verification: vdoc.get('_id')
 									})
-									await db.Models.listlvl.find({placement: {$gte : newPlacement}}, async(err, docs) => {
-										docs.forEach(doc => {
-											doc.placement += 1;
-											if(doc.points != 0) {
-												doc.points -= 1;
-											}
-											doc.save();	
-										});
+									const docs = await db.Models.listlvl.find({placement: {$gte : newPlacement}})
+									docs.forEach((pdoc) => {
+										pdoc.placement += 1;
+										if(pdoc.points != 0) {
+											pdoc.points -= 1;
+										}
+										pdoc.save();
 									})
+									
 									listlvl.save();
 									nclguild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${vdoc.lvlname}** has been moved to #${newPlacement}.`);
 									res.redirect('/panel');

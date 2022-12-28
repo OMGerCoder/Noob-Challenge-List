@@ -9,11 +9,12 @@ module.exports = {
 	async execute(interaction, db) {
 		// await interaction.reply({content: 'OMGer is currently coding this command as I speak', ephemeral: true})
 		// return;
+		// eslint-disable-next-line no-loss-of-precision
 		if((interaction.member.roles.cache.some(role => role.id === process.env.LISTTEAM_ROLEID)) || (interaction.user.id == 655225599710855169)) {
 			
 			const lvlid1 = await interaction.options.getInteger('levelid1').toString();
 			const lvlid2 = await interaction.options.getInteger('levelid2');
-            await db.Models.listlvl.findOne({lvlid: lvlid1}, (err, doc1) => {
+            db.Models.listlvl.findOne({lvlid: lvlid1}, (err, doc1) => {
                 db.Models.listlvl.findOne({lvlid: lvlid2}, (err, doc2) => {
                     if(doc1 && doc2) {
                         const placement1 = doc1.placement;

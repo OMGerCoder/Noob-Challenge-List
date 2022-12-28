@@ -43,8 +43,6 @@ class Database {
     
     initiateConnection(uri) {
         mongoose.connect(uri, {
-            useCreateIndex: true,
-            useFindAndModify: false,
             useNewUrlParser: true,
             useUnifiedTopology: true
         });

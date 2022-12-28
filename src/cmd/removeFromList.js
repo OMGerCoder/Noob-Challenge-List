@@ -13,7 +13,7 @@ module.exports = {
 			const lvlid = await interaction.options.getInteger('levelid').toString();
 			
 
-			await db.Models.listlvl.findOne({lvlid: lvlid}, (err, doc) => {
+			db.Models.listlvl.findOne({lvlid: lvlid}, (err, doc) => {
 				if(!doc) {
 					interaction.reply({content: "That level is not on the list", ephemeral: true});
 				} else {

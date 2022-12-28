@@ -17,7 +17,7 @@ module.exports = {
 			const placement = await interaction.options.getInteger('placement');
 			const user = await interaction.options.getMentionable('user');
 
-			await db.Models.listlvl.findOne({lvlid: lvlid}, (err, doc) => {
+			db.Models.listlvl.findOne({lvlid: lvlid}, (err, doc) => {
 				if(doc) {
 					interaction.reply({content: "Sorry, you cannot submit duplicates", ephemeral: true});
 				} else {
