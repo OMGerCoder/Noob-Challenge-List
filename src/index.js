@@ -170,35 +170,44 @@ app.get('/list', async (req, res) => {
 	
 	
 })
-app.get('/stats', async(req, res) => {
-	db.Models.user.find({}, async(err, userDocs) => {
-		
+app.get('/stats', (req, res) => {
+	const loopCompletePromise = new Promise((resolve) => {
 		var obj = {};
-		userDocs.forEach(async(user) => {
+		var docCount = 0;
+		db.Models.user.countDocuments({}, (err, result) => {
+			docCount = result;
+			db.Models.user.find({}, (err, userDocs) => {
 			
-			const doc = await db.Models.listlvl.find({lvlid: { $in: user.levels}})
-			obj[user.username] = 0;
-			doc.forEach(async(lvl) => {
-				obj[user.username] += lvl.points;
+				for(const user of userDocs) {
+					db.Models.listlvl.find({lvlid: { $in: user.levels}},(err, doc) => {
+						obj[user.username] = 0;
+						for(const lvl of doc) {
+							obj[user.username] += lvl.get('points');
+							
+						}
+						if(Object.keys(obj).length == docCount) {
+							resolve(obj);
+						}
+					})
+					
+				}
 			})
-			
-				
-			
-			
 		})
+		
 
-		setTimeout(() => {
-			var sortable = [];
-			for(var user in obj) {
-				sortable.push([user, obj[user]])
-			}
-			sortable.sort((a, b) => {
-				return b[1] - a[1]
-			});
-			res.render('stats', {array: sortable, authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
-		}, 750)
 	})
+	loopCompletePromise.then(obj => {
+		var sortable = [];
+		for(var user in obj) {
+			sortable.push([user, obj[user]])
+		}
+		sortable.sort((a, b) => {
+			return b[1] - a[1]
+		});
+		res.render('stats', {array: sortable, authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 	
+	
+	})
 })
 app.get('/rules', async(req, res) => {
 	res.render('rules', {

@@ -21,7 +21,7 @@ html
               a(href="/lvl/" + val.placement) Click for more info
         else
           //do nothing
-      h2 Legacy List
+      h2(id="legacytitle") Legacy List
       each val in levels
         if levels.indexOf(val) > 99
           div(class="levellistitem")
