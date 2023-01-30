@@ -9,14 +9,32 @@ html
     h1(id="listtitle") Noob Challenge List
     div(class="list")
       each val in levels
-        div(class="levellistitem")
-          span #{levels.indexOf(val) + 1}.
-          img(src="https://noobchallengelist.com/levelimgs/" + val.lvlid + ".png" onerror="this.src = 'https://noobchallengelist.com/levelimgs/placeholder.png';")
-          span(class="bold" style="font-size: 20pt") #{val.name}
-          span By #{val.author}
-          each tag in val.tags
-            span(class="lvltag tag-" + tag) #{tag}
-          span
-            a(href="/lvl/" + val.placement) Click for more info
+        if levels.indexOf(val) < 100
+          div(class="levellistitem")
+            span #{levels.indexOf(val) + 1}.
+            img(src="https://noobchallengelist.com/levelimgs/" + val.lvlid + ".png" onerror="this.src = 'https://noobchallengelist.com/levelimgs/placeholder.png';")
+            span(class="bold" style="font-size: 20pt") #{val.name}
+            span By #{val.author}
+            each tag in val.tags
+              span(class="lvltag tag-" + tag) #{tag}
+            span
+              a(href="/lvl/" + val.placement) Click for more info
+        else
+          //do nothing
+      h2 Legacy List
+      each val in levels
+        if levels.indexOf(val) > 99
+          div(class="levellistitem")
+            span #{levels.indexOf(val) + 1}.
+            img(src="https://noobchallengelist.com/levelimgs/" + val.lvlid + ".png" onerror="this.src = 'https://noobchallengelist.com/levelimgs/placeholder.png';")
+            span(class="bold" style="font-size: 20pt") #{val.name}
+            span By #{val.author}
+            each tag in val.tags
+              span(class="lvltag tag-" + tag) #{tag}
+            span
+              a(href="/lvl/" + val.placement) Click for more info
+        else
+          //do nothing
+      
 
     include includes/footer.pug
