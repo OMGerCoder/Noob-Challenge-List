@@ -18,9 +18,10 @@ module.exports = {
 					interaction.reply({content: "That level is not on the list", ephemeral: true});
 				} else {
 					// eslint-disable-next-line no-unused-vars
-					var canAddPoints = false;
+					const oldPlacement = doc.placement;
 					doc.remove();
-					db.Models.listlvl.find({placement: {$gte : doc.placement}}, (err, docs) => {
+
+					db.Models.listlvl.find({placement: {$gte : oldPlacement}}, (err, docs) => {
 						for(const belowdoc of docs) {
 							const oldPoints = belowdoc.points;
 							

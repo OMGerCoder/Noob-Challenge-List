@@ -7,7 +7,9 @@ html
     include includes/menubar.pug
     h2 Level
     h1=lvlname
-    h3 By #{creator}, verified by #{verifier}
+    h3 By #{creator}, verified by #{verifier} 
+      each tag in tags
+        span(class="lvltag tag-" + tag) #{tag}
     h3
       if isStreamable
         iframe(src=proof, width="640", height="360", frameborder="0", allowfullscreen) 
@@ -20,6 +22,9 @@ html
 
     h3 #{points}pts
     h1=id
+    
+    br
+    br
     if adminPanelAccess
       a(href="/panel/edit/" + id, class="panelitem")
         i(class="fa-solid fa-pen-to-square panelicon")
