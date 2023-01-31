@@ -21,6 +21,10 @@ border-radius: 25px;
     border-radius: 5px;
     margin-right: 8px;
     text-align: center;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+    cursor: pointer;
 }
 body {
     margin: 0px;
@@ -77,6 +81,11 @@ background-color: #111;
     flex-direction: column; 
     margin-left: 8px;
 }
+.listl {
+    display: flex;
+    flex-direction: column; 
+    margin-left: 8px;
+}
 .submitrecord, .editrecord {
     display: inline-block;
     padding-right: 20px;
@@ -124,7 +133,21 @@ h1, h2, h3, form, p:not(#legacytitle) {
     box-shadow: 0 0 10px #8f8f8f;
     margin-top: 20px;
     margin-bottom: 20px;
-  }
+}
+.levellistiteml {
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+    align-items: center;
+  
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 8px;
+    background-color: white;
+    box-shadow: 0 0 10px #8f8f8f;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
 @media screen and (max-width: 600px) {
     .hzMenubar .menuitem:not(.active) {display: none;}
     .hzMenubar .icon {
@@ -200,6 +223,9 @@ span {
 }
 .rightmargin {
     margin-left: 8px;
+}
+.invisible {
+    display: none;
 }
 .lvltag {
     background-color: #333;
