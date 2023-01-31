@@ -12,7 +12,7 @@ html
     div(class="movelevel" id="editgeneral")
       h1 Move Level
       p Level id: #{lvlid}
-      form(action="/api/movelevel", method="POST" onsubmit="return formSubmitFunc();")
+      form(action="/api/movelevel?redirect=/list", method="POST" onsubmit="return formSubmitFunc();")
         input(type="number", name="placement", value=placement)
         input(type="hidden", name="lvlid", value=lvlid)
         br
