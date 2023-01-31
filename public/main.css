@@ -27,7 +27,9 @@ border-radius: 25px;
     cursor: pointer;
 }
 body {
-    margin: 0px;
+    margin: 8px;
+    margin-bottom: 0;
+    margin-top: 0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -79,12 +81,10 @@ background-color: #111;
 .list {
     display: flex;
     flex-direction: column; 
-    margin-left: 8px;
 }
 .listl {
     display: flex;
     flex-direction: column; 
-    margin-left: 8px;
 }
 .submitrecord, .editrecord {
     display: inline-block;
@@ -117,9 +117,7 @@ footer {
     padding-bottom: 4px;
     text-align: center;
 }
-h1, h2, h3, form, p:not(#legacytitle) {
-    margin-left: 8px;
-}
+
 .levellistitem {
     display: flex;
     width: fit-content;

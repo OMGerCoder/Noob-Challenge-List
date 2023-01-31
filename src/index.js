@@ -258,7 +258,6 @@ app.get('/lvl/:placement', async(req, res) => {
 					if(dataDoc.tags != undefined) {
 						tags = dataDoc.tags;
 					}
-					console.log(tags);
 					res.render('level', {
 						placement: doc.placement,
 						lvlname: dataDoc.lvlname,
@@ -284,12 +283,12 @@ app.get('/lvl/:placement', async(req, res) => {
 app.get('/submit', async(req, res) => {
 	const nclguild = await client.guilds.fetch(process.env.GUILDID);
 	if(!checkAuthorized(res)) {
-		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+		res.status(401).render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 	} else {
 		try {
 			await nclguild.members.fetch(res.locals.info.id)
 		} catch(err) {
-			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+			res.status(403).render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 			return;
 		}
 		res.render('submit', {verSuccessful: false, vicSuccessful: false, authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
@@ -318,7 +317,7 @@ app.get('/api/login', async(req, res) => {
 			try {
 				res.cookie('discordToken', result.access_token, { maxAge: result.expires_in * 1000, httpOnly: true })
 			} catch(err) {
-				res.render('error', {error: 'Seems like an error occured in the Discord API. This error has been logged to the console. Notify OMGer immediately and try again later.', authorized: false, info: res.locals.info, isMod: res.locals.isMod})
+				res.status(500).render('error', {error: 'Seems like an error occured in the Discord API. This error has been logged to the console. Notify OMGer immediately and try again later.', authorized: false, info: res.locals.info, isMod: res.locals.isMod})
 				console.log(err);
 				console.log(result);
 				console.log(params.toString());
@@ -339,11 +338,11 @@ app.post('/api/submit/verification', async(req, res) => {
 	const tagsString = req.body.tags.toLowerCase();
 	
 	if(/\s/.test(tagsString) || tagsString.startsWith(",") || tagsString.endsWith(",")) {
-		res.render('error', {error: 'Invalid tags. Hint: Tags do not have spaces and are seperated by a comma (no spaces on that too)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})	
+		res.status(400).render('error', {error: 'Invalid tags. Hint: Tags do not have spaces and are seperated by a comma (no spaces on that too)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})	
 	} else {
 		db.Models.verification.findOne({lvlid: req.body.lvlid}, (err, doc) => {
 			if(doc) {
-				res.render('error', {error: 'You cannot submit duplicates!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})	
+				res.status(400).render('error', {error: 'You cannot submit duplicates!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})	
 			} else {
 				const tags = tagsString.split(",");
 				const doc = new db.Models.verification({
@@ -367,7 +366,11 @@ app.post('/api/submit/verification', async(req, res) => {
 					// <@&${process.env.LISTTEAM_ROLEID}> List team ping
 					nclguild.channels.cache.get(process.env.TODO_CHANNELID).send(`\n**${data.lvlname}**\nBy **${data.creator}**\n${data.lvlid}\nVerified by **${data.verifier}**\n${data.videoProof}`);
 				}
-				res.render('submit', {verSuccessful: true, vicSuccessful: false, authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+				if(req.query.redirect) {
+					res.redirect(req.query.redirect)
+				} else {
+					res.json(data)
+				}
 				
 			}
 		})
@@ -381,7 +384,7 @@ app.post('/api/submit/victory', async(req, res) => {
 	const user = res.locals.info;
 	db.Models.victor.findOne({userid: user.id, lvlid: req.body.lvlid}, (err, doc) => {
 		if(doc) {
-			res.render('error', {error: 'You cannot submit duplicates!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})	
+			res.status(400).render('error', {error: 'You cannot submit duplicates!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})	
 		} else {
 		
 			const doc = new db.Models.victor({
@@ -398,16 +401,20 @@ app.post('/api/submit/victory', async(req, res) => {
 			
 			db.Models.listlvl.findOne({lvlid: req.body.lvlid}, (err, lvldoc) => {
 				if (lvldoc === null) {
-					res.render('error', {error: 'That level isnt on the list!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})	
+					res.status(400).render('error', {error: 'That level isnt on the list!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})	
 					return;
 				} else {
 					db.Models.verification.findOne({lvlid: req.body.lvlid}, (err, namedoc) => {
 						doc.save();
-					if(process.env.TESTMODE == "TRUE") { /* empty */ } else {
-						// <@&${process.env.LISTTEAM_ROLEID}> List team ping
-						nclguild.channels.cache.get(process.env.RECORDS_CHANNELID).send(`**${namedoc.lvlname}**\nCompleted by \`${user.username}#${user.discriminator}\`\n${req.body.videoproof}`);
-					}
-					res.render('submit', {verSuccessful: false, vicSuccessful: true, authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+						if(process.env.TESTMODE == "TRUE") { /* empty */ } else {
+							// <@&${process.env.LISTTEAM_ROLEID}> List team ping
+							nclguild.channels.cache.get(process.env.RECORDS_CHANNELID).send(`**${namedoc.lvlname}**\nCompleted by \`${user.username}#${user.discriminator}\`\n${req.body.videoproof}`);
+						}
+						if(req.query.redirect) {
+							res.redirect(req.query.redirect)
+						} else {
+							res.json({userid: user.id, videoProof: req.body.videoproof, lvlid: req.body.lvlid});
+						}
 					})
 				}
 			})
@@ -430,19 +437,23 @@ app.get('/api/deletever/:lvlid', async(req, res) => {
 						} else {
 							doc.remove();
 							
-							res.redirect('/panel');
+							if(req.query.redirect) {
+								res.redirect(req.query.redirect)
+							} else {
+								res.json({deleted: true});
+							}
 						}
 					})
 				}
 			} else {
-				res.json({isMod: false})
+				res.status(403).render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 			}
 			
 		} catch(err) {
-			res.json({inGuild: false})
+			res.status(403).render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 		}
 	} else {
-		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+		res.status(401).render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 	}
 })
 app.get("/api/delete/:lvlid", async(req, res) => {
@@ -479,19 +490,23 @@ app.get("/api/delete/:lvlid", async(req, res) => {
 									user.save();
 								}) 
 							})
-							res.redirect('/list');
+							if(req.query.redirect) {
+								res.redirect(req.query.redirect)
+							} else {
+								res.json({deleted: true});
+							}
 						}
 					})
 				}
 			} else {
-				res.json({isMod: false})
+				res.status(403).render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 			}
 			
 		} catch(err) {
-			res.json({inGuild: false})
+			res.status(403).render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 		}
 	} else {
-		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+		res.status(401).render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 	}
 })
 
@@ -522,14 +537,14 @@ app.get('/panel/edit/:lvlid', async(req, res) => {
 					})
 				}
 			} else {
-				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+				res.status(403).render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 			}
 			
 		} catch(err) {
-			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+			res.status(403).render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 		}
 	} else {
-		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+		res.status(401).render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 	}
 })
 app.get('/panel/move/:lvlid', async(req, res) => {
@@ -556,14 +571,14 @@ app.get('/panel/move/:lvlid', async(req, res) => {
 					})
 				}
 			} else {
-				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+				res.status(403).render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 			}
 			
 		} catch(err) {
-			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+			res.status(403).render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 		}
 	} else {
-		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+		res.status(401).render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 	}
 })
 app.post('/api/edit', async(req, res) => {
@@ -596,7 +611,7 @@ app.post('/api/edit', async(req, res) => {
 								if(req.body.tags != "") {
 									const tagsString = req.body.tags.toLowerCase();
 									if(/\s/.test(tagsString) || tagsString.startsWith(",") || tagsString.endsWith(",")) {
-										res.render('error', {error: 'Invalid tags. Your other changes have been applied already.', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+										res.status(400).render('error', {error: 'Invalid tags. Your other changes have been applied already.', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 										return;
 									} else {
 										const tags = tagsString.split(",");
@@ -611,14 +626,14 @@ app.post('/api/edit', async(req, res) => {
 					})
 				}
 			} else {
-				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+				res.status(403).render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 			}
 			
 		} catch(err) {
-			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+			res.status(403).render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 		}
 	} else {
-		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+		res.status(401).render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 	}
 })
 app.get('/panel', async(req, res) => {
@@ -650,14 +665,14 @@ app.get('/panel', async(req, res) => {
 					})
 				})
 			} else {
-				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+				res.status(403).render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 			}
 			
 		} catch(err) {
-			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+			res.status(403).render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 		}
 	} else {
-		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+		res.status(401).render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 	}
 })
 app.get('/api/resetpoints', async(req, res) => {
@@ -679,17 +694,21 @@ app.get('/api/resetpoints', async(req, res) => {
 						await doc.save();
 					}		
 				})
-				res.redirect('/panel')
+				if(req.query.redirect) {
+					res.redirect(req.query.redirect)
+				} else {
+					res.json({completed: true});
+				}
 				
 			} else {
-				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+				res.status(403).render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 			}
 			
 		} catch(err) {
-			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+			res.status(403).render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 		}
 	} else {
-		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+		res.status(401).render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 	}
 
 })
@@ -711,7 +730,7 @@ app.post('/api/movelevel/', async(req, res) => {
 							res.json({error: "cannotFindDoc"})
 						} else {
 							if(newPlacement > 100) {
-								res.render('error', {error: 'you cannot place levels any lower than 50', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+								res.status(400).render('error', {error: 'you cannot place levels any lower than 50', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 							} else {
 								const oldPlacement = doc.placement;
 								await doc.remove();
@@ -755,7 +774,11 @@ app.post('/api/movelevel/', async(req, res) => {
 								await listlvl.save();
 								console.log('debug6');
 								nclguild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${vdoc.lvlname}** has been moved to #${newPlacement}.`);
-								res.redirect('/panel');	
+								if(req.query.redirect) {
+									res.redirect(req.query.redirect)
+								} else {
+									res.json({lvlid: lvlid, placement: newPlacement});
+								}
 
 							}
 							
@@ -763,14 +786,14 @@ app.post('/api/movelevel/', async(req, res) => {
 					})
 				}
 			} else {
-				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+				res.status(403).render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 			}
 			
 		} catch(err) {
-			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+			res.status(403).render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 		}
 	} else {
-		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+		res.status(401).render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 	}
 })
 
@@ -790,14 +813,14 @@ app.get('/fixplacements', async(req, res) => {
 					res.json({msg: 'done'})
 				})
 			} else {
-				res.render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+				res.status(403).render('error', {error: 'GET OUT (You are not allowed to access this page)', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 			}
 			
 		} catch(err) {
-			res.render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+			res.status(403).render('error', {error: 'You are not in our discord server!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 		}
 	} else {
-		res.render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
+		res.status(401).render('error', {error: 'You are not logged in!', authorized: checkAuthorized(res), info: res.locals.info, isMod: res.locals.isMod})
 	}
 	
 

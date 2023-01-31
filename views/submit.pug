@@ -7,7 +7,7 @@ html
     include includes/menubar.pug
     div(class="submitrecord" id="submitver")
         h1 Submit Verification
-        form(action="/api/submit/verification", method="POST")
+        form(action="/api/submit/verification?redirect=/list", method="POST")
             p Level Name:
             input(type="text", name="lvlname", value="", required)
             p Level ID:
@@ -26,7 +26,7 @@ html
                 p(class="greentext") Successful!
     div(class="submitrecord" id="submitvic")
         h1 Submit Victory
-        form(action="/api/submit/victory", method="POST")
+        form(action="/api/submit/victory?redirect=/list", method="POST")
             p Level ID:
             input(type="number", name="lvlid", value="", required)
             p Video Proof link:
