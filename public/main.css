@@ -80,7 +80,8 @@ background-color: #111;
 }
 .list {
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
+    padding-left: 0px;
 }
 .listl {
     display: flex;
@@ -146,7 +147,7 @@ footer {
     margin-top: 20px;
     margin-bottom: 20px;
 }
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 730px) {
     .hzMenubar .menuitem:not(.active) {display: none;}
     .hzMenubar .icon {
         float: left;
@@ -233,7 +234,7 @@ span {
     border-radius: 10px;
     font-family: 'Nunito Sans', sans-serif;
 }
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 730px) {
     .menubar.responsive {position: relative;}
     .menubar.responsive a.icon {
       position: absolute;

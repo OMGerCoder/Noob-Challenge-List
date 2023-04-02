@@ -26,14 +26,14 @@ html
     br
     br
     if adminPanelAccess
-      a(href="/panel/edit/" + id, class="panelitem")
+      a(href="/panel/edit/" + id + "?redirect=/list", class="panelitem")
         i(class="fa-solid fa-pen-to-square panelicon")
         span Edit
-      br
+      
       a(href="/api/delete/" + id, class="panelitem")
         i(class="fa-solid fa-trash-can")
         span Delete
-      br
+      
       a(href="/panel/move/" + id, class="panelitem")
         i(class="fa-solid fa-hand")
         span Move

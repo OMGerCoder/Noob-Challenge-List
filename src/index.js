@@ -314,16 +314,21 @@ app.get('/api/login', async(req, res) => {
 		body: params
 	}).then((apires) => {
 		apires.json().then(result => {
-			try {
-				res.cookie('discordToken', result.access_token, { maxAge: result.expires_in * 1000, httpOnly: true })
-			} catch(err) {
-				res.status(500).render('error', {error: 'Seems like an error occured in the Discord API. This error has been logged to the console. Notify OMGer immediately and try again later.', authorized: false, info: res.locals.info, isMod: res.locals.isMod})
-				console.log(err);
-				console.log(result);
-				console.log(params.toString());
-				return;
+			if(req.query.error_description != "The resource owner or authorization server denied the request") {
+				try {
+					res.cookie('discordToken', result.access_token, { maxAge: result.expires_in * 1000, httpOnly: true })
+				} catch(err) {
+					res.status(500).render('error', {error: 'Seems like an error occured in the Discord API. Try again later.', authorized: false, info: res.locals.info, isMod: res.locals.isMod})
+					console.log(err);
+					console.log(result);
+					console.log(params.toString());
+					console.log(req.originalUrl);
+					return;
+				}
+				res.redirect('/list');
+			} else {
+				res.redirect('/');
 			}
-			res.redirect('/list');
 			
 		});
 	})

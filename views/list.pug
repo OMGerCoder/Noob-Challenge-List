@@ -23,7 +23,7 @@ html
         else
           //do nothing
     
-    h2(id="legacytitle" onClick='let heading = document.getElementById("legacytitle"); let legacyList = document.getElementById("listlegacy"); heading.addEventListener("click", () => { console.log("hello"); if(legacyList.className == "listl invisible") { legacyList.className = "listl"; } else { legacyList.className = "listl invisible"; } })') Legacy List (double click to view)
+    h2(id="legacytitle" onClick='let heading = document.getElementById("legacytitle"); let legacyList = document.getElementById("listlegacy"); if(legacyList.className == "listl invisible") { legacyList.className = "listl"; } else { legacyList.className = "listl invisible"; }') Legacy List (click to view)
     div(class="listl invisible" id="listlegacy")
       each val in levels
         if levels.indexOf(val) > 99

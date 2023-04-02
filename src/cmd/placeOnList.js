@@ -57,20 +57,36 @@ module.exports = {
 										userDoc.levels.push(lvlid);
 										userDoc.save();
 									}
-									if(process.env.TESTMODE == "TRUE") {
-										interaction.guild.channels.cache.get('923093254629625926').send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list.`);
-									} else {
-										interaction.guild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list.`);
-									}
-									interaction.reply({content: `Placement successful. <@${user.id}> has been awarded ${listlvl.points} points.`, ephemeral: false})
+									// eslint-disable-next-line no-unused-vars
+									db.Models.listlvl.findOne({placement: 51}).populate('verification').exec((err, extendeddoc) => {
+										var extendedlevel = extendeddoc.verification.lvlname;
+										db.Models.listlvl.findOne({placement: 101}).populate('verification').exec((err, legacydoc) => {
+											var legacylevel = legacydoc.verification.lvlname;
+											if(process.env.TESTMODE == "TRUE") {
+												interaction.guild.channels.cache.get('923093254629625926').send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list with ${extendedlevel} falling to the extended list and ${legacylevel} falling to the legacy list.`);
+											} else {
+												interaction.guild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list with ${extendedlevel} falling to the extended list and ${legacylevel} falling to the legacy list.`);
+											}
+											interaction.reply({content: `Placement successful. <@${user.id}> has been awarded ${listlvl.points} points.`, ephemeral: false})
+										})
+									})
+									
 								}) 
 							} else {
-								if(process.env.TESTMODE == "TRUE") {
-									interaction.guild.channels.cache.get('923093254629625926').send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list.`);
-								} else {
-									interaction.guild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list.`);
-								}
-								interaction.reply({content: `Placement successful. No points have been awarded.`, ephemeral: true})
+								// eslint-disable-next-line no-unused-vars
+								db.Models.listlvl.findOne({placement: 51}).populate('verification').exec((err, extendeddoc) => {
+									var extendedlevel = extendeddoc.verification.lvlname;
+									db.Models.listlvl.findOne({placement: 101}).populate('verification').exec((err, legacydoc) => {
+										var legacylevel = legacydoc.verification.lvlname;
+										if(process.env.TESTMODE == "TRUE") {
+											interaction.guild.channels.cache.get('923093254629625926').send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list with ${extendedlevel} falling to the extended list and ${legacylevel} falling to the legacy list.`);
+										} else {
+											interaction.guild.channels.cache.get(process.env.LISTUPDATES_CHANNELID).send(`**${doc.lvlname}** has been placed at #${placement.toString()} on the list with ${extendedlevel} falling to the extended list and ${legacylevel} falling to the legacy list.`);
+										}
+										interaction.reply({content: `Placement successful. No points have been awarded.`, ephemeral: true})
+									})
+								})
+								
 							}
 							
 							
