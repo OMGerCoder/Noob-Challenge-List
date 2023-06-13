@@ -81,7 +81,6 @@ background-color: #111;
 .list {
     display: flex;
     flex-direction: column;
-    padding-left: 0px;
 }
 .listl {
     display: flex;
@@ -109,7 +108,8 @@ input[type=submit] {
 }
 footer {
     background-color: #333;
-    margin: 0px;
+    margin-left: -8px;
+    margin-right: -8px;
     margin-top: auto;
 }
 #footertext {
@@ -234,6 +234,20 @@ span {
     border-radius: 10px;
     font-family: 'Nunito Sans', sans-serif;
 }
+.loading {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px;
+    background-color: white;
+    border: 3px solid black;
+    border-radius: 25px;
+}
+.loading p {
+    margin: 0px;
+}
 @media screen and (max-width: 730px) {
     .menubar.responsive {position: relative;}
     .menubar.responsive a.icon {
@@ -246,4 +260,4 @@ span {
       display: block;
       text-align: left;
     }
-  }
+}
