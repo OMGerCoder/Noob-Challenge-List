@@ -49,6 +49,9 @@ a {
 * {
     font-family: 'Libre Franklin', sans-serif;
 }
+p#homepagetext {
+    color:red;
+}
 .hzMenubar .menuitem {
 float: left;
 display: block;
@@ -260,4 +263,8 @@ span {
       display: block;
       text-align: left;
     }
+}
+#footertext a {
+    color: white;
+    text-decoration: underline;
 }

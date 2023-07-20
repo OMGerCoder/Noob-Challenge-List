@@ -36,6 +36,13 @@ client.once('ready', async() => {
 		} else {
 			client.user.setPresence({activity: null});
 		}
+		console.log('-------------------------------------------------');
+		console.log('Bot and website are now active...');
+		console.log('NOOB CHALLENGE LIST BOT AND WEBSITE');
+		console.log('Copyright © OMGer Development and GINC 2021-2023.');
+		console.log('-------------------------------------------------');
+		console.log('* Peeking at the inner workings of their code, it fills you with determination.')
+		
 	}).catch((err) => {
 		console.error(err);
 	})
@@ -211,6 +218,12 @@ app.get('/stats', (req, res) => {
 })
 app.get('/rules', async(req, res) => {
 	res.render('rules', {
+		authorized: checkAuthorized(res), 
+		info: res.locals.info
+	})
+})
+app.get('/privacy', async(req, res) => {
+	res.render('privacy', {
 		authorized: checkAuthorized(res), 
 		info: res.locals.info
 	})
