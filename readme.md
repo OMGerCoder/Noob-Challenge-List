@@ -1,5 +1,5 @@
 # Noob Challenge List
-## .ENV filetemplate
+## .ENV file template
 TOKEN=# Discord bot token
 MONGODB=# MongoDB URI full
 GUILDID=# Server the bot is linked to
