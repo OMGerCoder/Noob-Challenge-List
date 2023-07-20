@@ -1,5 +1,6 @@
 # Noob Challenge List
 ## .ENV file template
+```
 TOKEN=# Discord bot token
 MONGODB=# MongoDB URI full
 GUILDID=# Server the bot is linked to
@@ -14,3 +15,4 @@ CERT=# Certificate file address
 OAUTHID=# Discord Oauth ID
 OAUTHSECRET=# Discord Oauth secret
 REDIRECT_URI=# Login API handler page
+```
