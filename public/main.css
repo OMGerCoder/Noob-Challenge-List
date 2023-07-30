@@ -4,7 +4,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@600&display=swap');
 #menubar {
 list-style-type: none;
-margin: 8px;
+margin-top: 8px;
 padding: 0;
 overflow: hidden;
 background-color: #333;
