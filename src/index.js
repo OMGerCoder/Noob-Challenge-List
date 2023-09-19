@@ -80,9 +80,9 @@ client.on('interactionCreate', async interaction => {
 	if(process.env.TESTMODE == "TRUE" && interaction.guild.id == '922078428604280833') {
 		interaction.reply("Sorry, the bot is currently in testmode. Please try again later or contact OMGer.");
 		return
-	}else if (process.env.TESTMODE == "FALSE" && interaction.guild.id == '923010608880836629') {
+	}/*else if (process.env.TESTMODE == "FALSE" && interaction.guild.id == '923010608880836629') {
 		interaction.reply("Put the bot in testmode before it can work with this server.")
-	}
+	}*/
 	try {
 		await command.execute(interaction, db);
 	} catch (error) {

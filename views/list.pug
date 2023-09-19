@@ -25,10 +25,10 @@ html
     
     h2(id="legacytitle" onClick='let heading = document.getElementById("legacytitle"); let legacyList = document.getElementById("listlegacy"); if(legacyList.className == "listl invisible") { legacyList.className = "listl"; } else { legacyList.className = "listl invisible"; }') Legacy List (click to view)
     div(class="listl invisible" id="listlegacy")
+      p Legacy list placements are not accurate. Placements will not be shown.
       each val in levels
         if levels.indexOf(val) > 99
           div(class="levellistiteml")
-            span #{levels.indexOf(val) + 1}.
             img(src="https://noobchallengelist.com/levelimgs/" + val.lvlid + ".png" onerror="this.src = 'https://noobchallengelist.com/levelimgs/placeholder.png';")
             span(class="bold" style="font-size: 20pt") #{val.name}
             span By #{val.author}

@@ -41,10 +41,12 @@ module.exports = {
                     interaction.reply({content: `Sorry, character limit (Result has been dumped in console)`, ephemeral: true});
                     console.log(cleaned);
                     return;
+                } else {
+                  interaction.reply({content: `\`\`\`js\n${cleaned}\n\`\`\``, ephemeral: true});
                 }
                 // Reply in the channel with our result
                 
-                interaction.reply({content: `\`\`\`js\n${cleaned}\n\`\`\``, ephemeral: true});
+                
               } catch (err) {
                 // Reply in the channel with our error
                 console.log(err)
